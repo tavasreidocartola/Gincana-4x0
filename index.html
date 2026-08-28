@@ -1,0 +1,2806 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GINCANA 4x0 - Futebol 7</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f2e9;
+            color: #1a1a1a;
+            user-select: none;
+        }
+
+        .font-sports {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .retro-card {
+            background-color: #ffffff;
+            border: 2px solid #1a1a1a;
+            box-shadow: 3px 3px 0px #1a1a1a;
+            border-radius: 4px;
+        }
+
+        .retro-btn {
+            border: 2px solid #1a1a1a;
+            box-shadow: 2px 2px 0px #1a1a1a;
+            transition: all 0.1s ease;
+            font-weight: 700;
+        }
+
+        .retro-btn:hover:not(:disabled) {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #1a1a1a;
+        }
+
+        .retro-btn:active:not(:disabled) {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px #1a1a1a;
+        }
+
+        .retro-btn-red {
+            background-color: #e64a19;
+            color: #ffffff;
+        }
+        .retro-btn-red:hover:not(:disabled) {
+            background-color: #d83a08;
+        }
+
+        .retro-btn-dark {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .pitch-container {
+            background-color: #2e7d32;
+            background-image: repeating-linear-gradient(
+                0deg,
+                #2e7d32,
+                #2e7d32 40px,
+                #276b2b 40px,
+                #276b2b 80px
+            );
+            border: 3px solid #1a1a1a;
+            box-shadow: 4px 4px 0px #1a1a1a;
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .pitch-lines {
+            position: absolute;
+            inset: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.65);
+            pointer-events: none;
+        }
+
+        .pitch-half-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.65);
+            transform: translateY(-50%);
+        }
+
+        .pitch-center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            border: 2px solid rgba(255, 255, 255, 0.65);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .pitch-center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .pitch-box-top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 140px;
+            height: 55px;
+            border: 2px solid rgba(255, 255, 255, 0.65);
+            border-top: none;
+            transform: translateX(-50%);
+        }
+
+        .pitch-box-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 140px;
+            height: 55px;
+            border: 2px solid rgba(255, 255, 255, 0.65);
+            border-bottom: none;
+            transform: translateX(-50%);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1ebd9;
+            border-left: 1px solid #1a1a1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1a1a1a;
+        }
+
+        .badge-captain {
+            background-color: #f59e0b;
+            color: #1a1a1a;
+            font-weight: 800;
+            border: 1px solid #1a1a1a;
+        }
+
+        @keyframes pulseGoal {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .animate-goal {
+            animation: pulseGoal 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-2 md:p-6">
+
+    <header class="w-full max-w-7xl mx-auto mb-4">
+        <div class="retro-card p-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white">
+            <div class="flex items-center space-x-3">
+                <div class="bg-black text-white p-2 text-2xl font-sports font-bold tracking-wider rounded">
+                    4x0
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-sports tracking-wide leading-none text-gray-900">GINCANA 4x0</h1>
+                    <p class="text-xs text-gray-600 font-semibold tracking-wider">CAMPEONATO DE FUTEBOL 7 ESCOLAR</p>
+                </div>
+            </div>
+            
+            <div id="game-status-badge" class="hidden sm:flex items-center px-3 py-1 bg-yellow-100 border-2 border-black rounded text-xs font-bold font-sports">
+                <span id="game-phase-label">FASE DE SETUP</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full max-w-7xl mx-auto flex-1">
+        
+        <!-- STEP 1: FORMATION AND GAME MODE SELECTION -->
+        <section id="screen-setup" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left Panel: Controls -->
+            <div class="lg:col-span-4 flex flex-col space-y-5">
+                <!-- Formations -->
+                <div class="retro-card p-4">
+                    <h2 class="text-xs font-bold font-sports tracking-wider text-gray-500 mb-3">FORMAÇÃO (FUT7)</h2>
+                    <div class="grid grid-cols-1 gap-2.5">
+                        <button onclick="selectFormation('1-2-3-1')" id="btn-fmt-1-2-3-1" class="fmt-btn retro-btn py-3 px-3 text-left flex justify-between items-center bg-white hover:bg-gray-100">
+                            <span class="font-sports text-lg">1-2-3-1</span>
+                            <span class="text-xs text-gray-500 font-medium">Equilibrada</span>
+                        </button>
+                        <button onclick="selectFormation('1-1-2-3')" id="btn-fmt-1-1-2-3" class="fmt-btn retro-btn py-3 px-3 text-left flex justify-between items-center bg-white hover:bg-gray-100">
+                            <span class="font-sports text-lg">1-1-2-3</span>
+                            <span class="text-xs text-gray-500 font-medium">Ofensiva</span>
+                        </button>
+                        <button onclick="selectFormation('1-3-2-1')" id="btn-fmt-1-3-2-1" class="fmt-btn retro-btn py-3 px-3 text-left flex justify-between items-center bg-white hover:bg-gray-100">
+                            <span class="font-sports text-lg">1-3-2-1</span>
+                            <span class="text-xs text-gray-500 font-medium">Defensiva</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game Mode -->
+                <div class="retro-card p-4">
+                    <h2 class="text-xs font-bold font-sports tracking-wider text-gray-500 mb-3">MODO DE JOGO</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectMode('classic')" id="btn-mode-classic" class="mode-btn retro-btn py-3 px-2 text-center bg-white">
+                            <div class="font-sports text-base">CLÁSSICO</div>
+                            <div class="text-[10px] text-gray-500 mt-0.5">Overall Visível</div>
+                        </button>
+                        <button onclick="selectMode('blind')" id="btn-mode-blind" class="mode-btn retro-btn py-3 px-2 text-center bg-white">
+                            <div class="font-sports text-base flex items-center justify-center gap-1">
+                                <span>ÀS CEGAS</span>
+                                <span class="bg-black text-white px-1 py-0.2 text-xs rounded">?</span>
+                            </div>
+                            <div class="text-[10px] text-gray-500 mt-0.5">Overall Oculto</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Start Action Card -->
+                <div class="retro-card p-4 bg-yellow-50 flex flex-col justify-between">
+                    <p class="text-xs text-gray-700 font-medium mb-3">
+                        <i class="fa-solid fa-circle-info mr-1 text-yellow-600"></i>
+                        Escolha uma formação e o modo de jogo para iniciar o sorteio das turmas e montar seu elenco de 7 jogadores.
+                    </p>
+                    <button onclick="startDrafting()" class="retro-btn retro-btn-red w-full py-4 font-sports text-xl tracking-wider flex items-center justify-center gap-2">
+                        <span>INICIAR SORTEIO</span>
+                        <i class="fa-solid fa-dice"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pitch Preview Center -->
+            <div class="lg:col-span-8">
+                <div class="retro-card p-4 h-full flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-sports text-xl text-gray-800">CAMPO DE FUTEBOL 7</h3>
+                        <span id="setup-fmt-display" class="bg-black text-white text-xs font-sports px-2.5 py-1 rounded">1-2-3-1</span>
+                    </div>
+
+                    <!-- Visual Pitch -->
+                    <div class="pitch-container w-full h-[460px] md:h-[520px] flex items-center justify-center p-4">
+                        <div class="pitch-lines"></div>
+                        <div class="pitch-half-line"></div>
+                        <div class="pitch-center-circle"></div>
+                        <div class="pitch-center-dot"></div>
+                        <div class="pitch-box-top"></div>
+                        <div class="pitch-box-bottom"></div>
+
+                        <!-- Dynamic Position Nodes Container -->
+                        <div id="setup-pitch-nodes" class="relative w-full h-full z-10">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <div class="mt-3 text-center text-xs text-gray-500 font-medium">
+                        Formação selecionada possui: 1 Goleiro, <span id="formation-breakdown">2 Zagueiros, 1 Meia, 2 Alas e 1 Atacante</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 2: PLAYER DRAFTING (SORTEIO) -->
+        <section id="screen-draft" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left Column: Drawn Room & Player Selection -->
+            <div class="lg:col-span-4 flex flex-col space-y-4">
+                <!-- Room Card -->
+                <div class="retro-card p-4 bg-white relative overflow-hidden">
+                    <div class="text-[10px] font-bold font-sports text-red-600 tracking-widest mb-1">TURMA SORTEADA</div>
+                    <div id="drawn-room-name" class="font-sports text-3xl text-gray-900 leading-tight">IELEMEC4</div>
+                    <div id="drawn-room-year" class="font-sports text-xl text-red-600 mb-2">2026</div>
+                    <div class="text-xs text-gray-500 flex items-center gap-1 border-t pt-2 border-gray-200">
+                        <i class="fa-solid fa-rotate text-gray-400 text-xs"></i>
+                        <span>As turmas podem se repetir nos próximos sorteios.</span>
+                    </div>
+                </div>
+
+                <!-- Available Players List -->
+                <div class="retro-card p-4 flex-1 flex flex-col">
+                    <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-200">
+                        <h3 class="font-sports text-lg text-gray-800">ESCOLHA 1 JOGADOR</h3>
+                        <span id="needed-positions-tag" class="text-[11px] bg-gray-100 border border-gray-300 px-2 py-0.5 rounded font-medium text-gray-600">
+                            Necessários: GOL, ZAG...
+                        </span>
+                    </div>
+
+                    <div id="draft-players-list" class="space-y-2 overflow-y-auto max-h-[380px] pr-1 flex-1">
+                        <!-- Dynamic Player Cards Generated Here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pitch & Current Lineup View -->
+            <div class="lg:col-span-8 flex flex-col lg:flex-row gap-4">
+                <div class="retro-card p-4 flex-1">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-sports text-xl text-gray-800">SEU CAMPO</h3>
+                        <span class="text-xs font-bold font-sports text-gray-600">
+                            ESCOLHIDOS: <span id="draft-count-badge" class="text-red-600 font-extrabold text-sm">0</span> / 7
+                        </span>
+                    </div>
+
+                    <div class="pitch-container w-full h-[450px] md:h-[500px]">
+                        <div class="pitch-lines"></div>
+                        <div class="pitch-half-line"></div>
+                        <div class="pitch-center-circle"></div>
+                        <div class="pitch-center-dot"></div>
+                        <div class="pitch-box-top"></div>
+                        <div class="pitch-box-bottom"></div>
+
+                        <div id="draft-pitch-nodes" class="relative w-full h-full z-10">
+                            <!-- Field Nodes -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Box Score Summary Sidebar -->
+                <div class="retro-card p-4 w-full lg:w-64 bg-white flex flex-col">
+                    <div class="flex items-center justify-between border-b border-gray-200 pb-2 mb-3">
+                        <span class="font-sports text-sm tracking-wider text-gray-600">BOX SCORE</span>
+                        <span id="box-score-count" class="font-sports text-sm font-bold">0 / 7</span>
+                    </div>
+
+                    <!-- Overall Summary -->
+                    <div id="draft-ovr-summary" class="mb-4 bg-gray-50 p-2.5 rounded border border-gray-200 text-center">
+                        <div class="text-[10px] font-sports text-gray-500">OVERALL TIME</div>
+                        <div id="draft-ovr-value" class="font-sports text-3xl font-bold text-gray-900">--</div>
+                    </div>
+
+                    <div id="draft-box-score-list" class="space-y-2 text-xs flex-1 overflow-y-auto">
+                        <!-- Line items for each position slot -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: CAPTAIN SELECTION & FULL SQUAD REVIEW -->
+        <section id="screen-captain" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-4 flex flex-col space-y-4">
+                <div class="retro-card p-5 bg-yellow-50 border-2 border-black">
+                    <span class="bg-yellow-400 border border-black px-2 py-0.5 text-[10px] font-sports font-bold tracking-wider rounded">
+                        PASSO FINAL DO ELENCO
+                    </span>
+                    <h2 class="font-sports text-2xl text-gray-900 mt-2">ESCOLHA SEU CAPITÃO</h2>
+                    <p class="text-xs text-gray-700 mt-1">
+                        Selecione um dos 7 jogadores do seu elenco para liderar a equipe no campeonato mata-mata. O capitão receberá a faixa <span class="badge-captain px-1 text-[10px] rounded">C</span>.
+                    </p>
+                </div>
+
+                <div class="retro-card p-4 bg-white flex-1">
+                    <h3 class="font-sports text-base text-gray-700 mb-3 border-b pb-2">CLIQUE NO JOGADOR DESEJADO:</h3>
+                    <div id="captain-selector-list" class="space-y-2">
+                        <!-- Player Selectable Cards -->
+                    </div>
+
+                    <button id="btn-confirm-captain" disabled onclick="confirmCaptainAndStart()" class="retro-btn retro-btn-red w-full mt-5 py-3 font-sports text-lg tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
+                        CONFIRMAR E IR PRO MATA-MATA →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Full Pitch Overview -->
+            <div class="lg:col-span-8">
+                <div class="retro-card p-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-sports text-xl text-gray-800">ELENCO FINALIZADO</h3>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xs font-bold font-sports bg-black text-white px-2.5 py-1 rounded">
+                                OVR TIME: <span id="captain-squad-ovr">--</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="pitch-container w-full h-[480px] md:h-[520px]">
+                        <div class="pitch-lines"></div>
+                        <div class="pitch-half-line"></div>
+                        <div class="pitch-center-circle"></div>
+                        <div class="pitch-center-dot"></div>
+                        <div class="pitch-box-top"></div>
+                        <div class="pitch-box-bottom"></div>
+
+                        <div id="captain-pitch-nodes" class="relative w-full h-full z-10">
+                            <!-- Interactive Field Nodes -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 4: TOURNAMENT BRACKET & MATCH PREVIEW -->
+        <section id="screen-tournament" class="hidden flex flex-col space-y-6">
+            <!-- Bracket Header & Phase Bar -->
+            <div class="retro-card p-4 bg-white flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 id="tournament-phase-title" class="font-sports text-2xl text-gray-900 leading-none">OITAVAS DE FINAL</h2>
+                    <p class="text-xs text-gray-500 mt-1">Campeonato Mata-Mata GINCANA 4x0 (FUT 7)</p>
+                </div>
+
+                <div class="flex items-center gap-2 font-sports text-xs">
+                    <div id="phase-badge-oitavas" class="px-3 py-1.5 border border-black rounded bg-black text-white">OITAVAS</div>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                    <div id="phase-badge-quartas" class="px-3 py-1.5 border border-black rounded bg-gray-100 text-gray-400">QUARTAS</div>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                    <div id="phase-badge-semi" class="px-3 py-1.5 border border-black rounded bg-gray-100 text-gray-400">SEMI</div>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                    <div id="phase-badge-final" class="px-3 py-1.5 border border-black rounded bg-gray-100 text-gray-400">FINAL</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Visual Playoff Bracket -->
+                <div class="lg:col-span-7">
+                    <div class="retro-card p-4 bg-white h-full flex flex-col">
+                        <h3 class="font-sports text-lg text-gray-800 mb-3 border-b pb-2">CHAVE DO CAMPEONATO</h3>
+                        <div id="bracket-display-container" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-1">
+                            <!-- Playoff Match Cards generated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next Match Preview / Simulation Center -->
+                <div class="lg:col-span-5 flex flex-col space-y-4">
+                    <div class="retro-card p-4 bg-yellow-50 border-2 border-black flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[10px] font-sports font-bold text-red-600 tracking-wider">SEU PRÓXIMO CONFRONTO</div>
+                            
+                            <div class="mt-4 p-4 bg-white border-2 border-black rounded text-center shadow-sm">
+                                <div class="font-sports text-sm text-gray-500">SUA EQUIPE</div>
+                                <div id="match-user-team-name" class="font-sports text-xl font-bold text-gray-900">SEU TIME</div>
+                                
+                                <div class="my-2 font-sports text-xl text-red-600 font-bold">VS</div>
+
+                                <div class="font-sports text-sm text-gray-500">ADVERSÁRIO SORTEADO</div>
+                                <div id="match-opp-team-name" class="font-sports text-xl font-bold text-gray-900">IELEMEC4 2026</div>
+                                <div id="match-opp-ovr" class="text-xs text-gray-500 mt-0.5">OVR: --</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <button onclick="prepareAndLaunchMatch()" class="retro-btn retro-btn-red w-full py-4 font-sports text-xl tracking-wider flex items-center justify-center gap-2">
+                                <span>IR PARA A PARTIDA</span>
+                                <i class="fa-solid fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 5: REAL-TIME MATCH SIMULATION & CONTROL CENTER -->
+        <section id="screen-match-play" class="hidden flex flex-col space-y-6">
+            <!-- Scoreboard & Controls Banner -->
+            <div class="retro-card p-5 bg-white border-2 border-black text-center shadow-md">
+                <div class="flex items-center justify-between border-b pb-2 mb-3">
+                    <span class="text-xs font-sports text-gray-500 tracking-widest" id="match-view-phase">OITAVAS DE FINAL</span>
+                    
+                    <!-- Live Match Clock -->
+                    <div class="flex items-center space-x-2 bg-black text-yellow-400 font-sports px-3 py-1 rounded text-base font-bold">
+                        <i class="fa-regular fa-clock text-xs"></i>
+                        <span id="live-match-half">1T</span>
+                        <span id="live-match-time">00:00</span>
+                    </div>
+
+                    <span id="live-match-status-badge" class="bg-yellow-100 border border-black px-2 py-0.5 rounded text-[10px] font-sports font-bold text-gray-800">
+                        PAUSADO
+                    </span>
+                </div>
+                
+                <!-- Main Teams & Live Score -->
+                <div id="scoreboard-box" class="flex items-center justify-center space-x-4 md:space-x-8 my-2">
+                    <div class="text-right flex-1">
+                        <div class="font-sports text-2xl md:text-3xl text-gray-900 leading-tight" id="match-teamA-name">SEU TIME</div>
+                        <div class="text-xs text-gray-500">Escalação: <span id="match-teamA-fmt">1-2-3-1</span></div>
+                    </div>
+
+                    <div class="bg-black text-white px-5 py-2.5 rounded border-2 border-black font-sports text-4xl md:text-5xl font-bold flex items-center gap-3">
+                        <span id="match-score-A">0</span>
+                        <span class="text-red-500 text-2xl">-</span>
+                        <span id="match-score-B">0</span>
+                    </div>
+
+                    <div class="text-left flex-1">
+                        <div class="font-sports text-2xl md:text-3xl text-gray-900 leading-tight" id="match-teamB-name">IELEMEC4 2026</div>
+                        <div class="text-xs text-gray-500">Adversário</div>
+                    </div>
+                </div>
+
+                <!-- Match Time Controls Bar -->
+                <div id="match-controls-bar" class="mt-4 pt-3 border-t border-gray-200 flex flex-wrap items-center justify-center gap-3">
+                    <button id="btn-match-start-pause" onclick="toggleMatchPlayback()" class="retro-btn retro-btn-red px-5 py-2 text-sm font-sports flex items-center gap-2">
+                        <i id="icon-match-play-pause" class="fa-solid fa-play"></i>
+                        <span id="lbl-match-play-pause">INICIAR PARTIDA</span>
+                    </button>
+
+                    <div class="flex items-center space-x-1 bg-gray-100 p-1 rounded border border-gray-300">
+                        <span class="text-[10px] font-sports font-bold text-gray-500 px-1">VELOCIDADE:</span>
+                        <button onclick="setMatchSpeed(1)" id="btn-speed-1" class="speed-btn retro-btn px-2 py-0.5 text-xs bg-black text-white">1x</button>
+                        <button onclick="setMatchSpeed(2)" id="btn-speed-2" class="speed-btn retro-btn px-2 py-0.5 text-xs bg-white text-gray-800">2x</button>
+                        <button onclick="setMatchSpeed(4)" id="btn-speed-4" class="speed-btn retro-btn px-2 py-0.5 text-xs bg-white text-gray-800">4x</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Half-Time / Match End Banner overlay message -->
+            <div id="match-half-time-banner" class="hidden retro-card p-4 bg-yellow-100 border-2 border-black text-center">
+                <h3 id="half-banner-title" class="font-sports text-2xl text-gray-900">INTERVALO</h3>
+                <p id="half-banner-subtitle" class="text-xs text-gray-700 mt-1">O primeiro tempo terminou. Clique abaixo para continuar para o 2º tempo.</p>
+                <button id="btn-half-banner-action" onclick="advanceToSecondHalf()" class="retro-btn retro-btn-red mt-3 py-2 px-6 font-sports text-base">
+                    CONTINUAR 2º TEMPO →
+                </button>
+            </div>
+
+            <!-- Live Match Timeline & Real-time Ratings -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-8">
+                    <div class="retro-card p-5 bg-white">
+                        <h3 class="font-sports text-lg text-gray-800 mb-4 border-b pb-2 flex items-center justify-between">
+                            <span>TIMELINE DA PARTIDA EM TEMPO REAL</span>
+                            <span class="text-xs text-gray-500 font-normal">Acontecimentos da partida</span>
+                        </h3>
+
+                        <!-- Event Logs Container -->
+                        <div id="match-events-timeline" class="space-y-2 max-h-[380px] overflow-y-auto pr-2">
+                            <!-- Generated timeline items -->
+                        </div>
+
+                        <!-- Penalties Shootout Container -->
+                        <div id="penalty-shootout-container" class="hidden mt-6 p-4 bg-gray-50 border-2 border-black rounded">
+                            <h4 class="font-sports text-base text-gray-900 mb-3 border-b pb-1">DISPUTA DE PÊNALTIS</h4>
+                            <div id="penalty-shots-list" class="space-y-1.5 text-xs font-medium">
+                                <!-- Penalty shots list -->
+                            </div>
+                            <div id="penalty-final-score" class="mt-3 text-center font-sports text-lg text-red-600 font-bold border-t pt-2 border-gray-300">
+                                SEU TIME 4 × 3 ADVERSÁRIO
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Match Ratings / Player Performance -->
+                <div class="lg:col-span-4 flex flex-col space-y-4">
+                    <div class="retro-card p-4 bg-white flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-sports text-lg text-gray-800 mb-3 border-b pb-2">NOTAS EM TEMPO REAL</h3>
+                            <div id="match-player-ratings-list" class="space-y-2">
+                                <!-- Player Rating Rows -->
+                            </div>
+                        </div>
+
+                        <div class="mt-6 border-t pt-4 border-gray-200">
+                            <button id="btn-next-after-match" disabled onclick="proceedAfterMatch()" class="retro-btn retro-btn-red w-full py-3.5 font-sports text-lg tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
+                                AGUARDANDO FIM DA PARTIDA...
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 6: TOURNAMENT SUMMARY & AWARDS -->
+        <section id="screen-summary" class="hidden flex flex-col space-y-6">
+            <!-- Outcome Header Card -->
+            <div id="summary-banner" class="retro-card p-6 bg-yellow-400 border-2 border-black text-center">
+                <div id="summary-trophy-icon" class="text-5xl mb-2">🏆</div>
+                <h2 id="summary-title" class="font-sports text-4xl text-gray-900 tracking-wider">CAMPEÃO GINCANA 4x0!</h2>
+                <p id="summary-subtitle" class="text-sm font-semibold text-gray-800 mt-1">Parabéns! Sua equipe conquistou o título de Futebol 7 da escola.</p>
+            </div>
+
+            <!-- Player & Team Stats Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Team Campaign Stats -->
+                <div class="lg:col-span-4">
+                    <div class="retro-card p-5 bg-white h-full flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-sports text-xl text-gray-900 mb-3 border-b pb-2">ESTATÍSTICAS DA CAMPANHA</h3>
+                            <div class="space-y-3 font-medium text-sm">
+                                <div class="flex justify-between py-1 border-b border-gray-100">
+                                    <span class="text-gray-600">Jogos Disputados</span>
+                                    <span id="stat-team-games" class="font-bold font-sports text-base">4</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-gray-100">
+                                    <span class="text-gray-600">Vitórias</span>
+                                    <span id="stat-team-wins" class="font-bold text-green-600 font-sports text-base">4</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-gray-100">
+                                    <span class="text-gray-600">Empates (Decididos nos pênaltis)</span>
+                                    <span id="stat-team-draws" class="font-bold text-yellow-600 font-sports text-base">0</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-gray-100">
+                                    <span class="text-gray-600">Derrotas</span>
+                                    <span id="stat-team-losses" class="font-bold text-red-600 font-sports text-base">0</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-gray-100">
+                                    <span class="text-gray-600">Gols Marcados</span>
+                                    <span id="stat-team-gf" class="font-bold font-sports text-base">12</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-gray-100">
+                                    <span class="text-gray-600">Gols Sofridos</span>
+                                    <span id="stat-team-ga" class="font-bold font-sports text-base">5</span>
+                                </div>
+                                <div class="flex justify-between py-1">
+                                    <span class="text-gray-600">Saldo de Gols</span>
+                                    <span id="stat-team-gd" class="font-bold font-sports text-base text-gray-900">+7</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 border-t pt-4">
+                            <button onclick="restartGame()" class="retro-btn retro-btn-dark w-full py-3 font-sports text-lg tracking-wider">
+                                JOGAR NOVAMENTE 🔄
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Individual Awards & Player Stats -->
+                <div class="lg:col-span-8 flex flex-col space-y-6">
+                    <!-- Awards Highlights -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Best Player -->
+                        <div class="retro-card p-4 bg-yellow-50 text-center">
+                            <div class="text-xs font-sports text-yellow-700 font-bold mb-1">⭐ MELHOR JOGADOR DO TORNEIO</div>
+                            <div id="award-mvp-name" class="font-sports text-xl font-bold text-gray-900">Jogador 07</div>
+                            <div id="award-mvp-team" class="text-xs text-gray-600 font-medium">Sua Equipe</div>
+                            <div id="award-mvp-stats" class="text-xs text-gray-500 mt-2">Média: 8.8 | Gols: 6</div>
+                        </div>
+
+                        <!-- Top Scorer -->
+                        <div class="retro-card p-4 bg-red-50 text-center">
+                            <div class="text-xs font-sports text-red-700 font-bold mb-1">⚽ ARTILHEIRO</div>
+                            <div id="award-scorer-name" class="font-sports text-xl font-bold text-gray-900">Jogador 07</div>
+                            <div id="award-scorer-team" class="text-xs text-gray-600 font-medium">Sua Equipe</div>
+                            <div id="award-scorer-stats" class="text-xs text-gray-500 mt-2">8 Gols</div>
+                        </div>
+
+                        <!-- Assist Leader -->
+                        <div class="retro-card p-4 bg-blue-50 text-center">
+                            <div class="text-xs font-sports text-blue-700 font-bold mb-1">🅰️ LÍDER EM ASSISTÊNCIAS</div>
+                            <div id="award-assister-name" class="font-sports text-xl font-bold text-gray-900">Jogador 10</div>
+                            <div id="award-assister-team" class="text-xs text-gray-600 font-medium">IELEMEC4 2026</div>
+                            <div id="award-assister-stats" class="text-xs text-gray-500 mt-2">5 Assistências</div>
+                        </div>
+                    </div>
+
+                    <!-- User Squad Individual Statistics Table -->
+                    <div class="retro-card p-5 bg-white">
+                        <h3 class="font-sports text-lg text-gray-900 mb-3 border-b pb-2">ESTATÍSTICAS DO SEU ELENCO</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b-2 border-black font-sports text-sm text-gray-700 bg-gray-50">
+                                        <th class="py-2 px-2">JOGADOR</th>
+                                        <th class="py-2 px-2">POS</th>
+                                        <th class="py-2 px-2 text-center">OVR</th>
+                                        <th class="py-2 px-2 text-center">JOGOS</th>
+                                        <th class="py-2 px-2 text-center">GOLS</th>
+                                        <th class="py-2 px-2 text-center">ASSIST</th>
+                                        <th class="py-2 px-2 text-center">MÉDIA</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-squad-stats-tbody">
+                                    <!-- Dynamic Squad Stats Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="w-full max-w-7xl mx-auto mt-6 text-center text-xs text-gray-500 font-medium border-t border-gray-300 pt-3">
+        GINCANA 4x0 &copy; 2026 — Campeonato de Futebol 7 Interclasses
+    </footer>
+
+    <script>
+        /**
+         * ROOMS / TEAMS DATABASE (Structured for future real player dataset injection)
+         * Each entry maps Class Room + Year to an array of specific generic players.
+         */
+        const ROOM_LIST = [
+            "IELEMEC2 2023", "IELEMEC2 2024", "IELEMEC2 2025",
+            "IDEV2 2023", "IDEV2 2024", "IDEV2 2025",
+            "IELEMEC3 2024", "IELEMEC3 2025", "IELEMEC3 2026",
+            "IDEV3 2024", "IDEV3 2025", "IDEV3 2026",
+            "IELEMEC4 2025", "IELEMEC4 2026",
+            "IDEV4 2025", "IDEV4 2026",
+            "IDEV5 2026",
+            "IELEMEC5 2026"
+        ];
+
+        // Real player database loaded from the supplied PDF.
+        function generateTeamDatabase() {
+            const db = {};
+            let globalId = 1;
+
+            const realPlayerData = {
+                "IELEMEC4 2025": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Vitin",
+                                                "overall": 85
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Thiago",
+                                                "overall": 85
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Giovanne",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Tavares",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Enzo",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Negro",
+                                                "overall": 86
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Kevin",
+                                                "overall": 85
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Lê",
+                                                "overall": 92
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Vini",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "João",
+                                                "overall": 89
+                                }
+                ],
+                "IELEMEC4 2026": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Vitin",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Thiago",
+                                                "overall": 91
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Giovanne",
+                                                "overall": 92
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Tavares",
+                                                "overall": 93
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Enzo",
+                                                "overall": 92
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Negro",
+                                                "overall": 87
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Kevin",
+                                                "overall": 87
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Vini",
+                                                "overall": 92
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "João",
+                                                "overall": 91
+                                }
+                ],
+                "IELEMEC2 2025": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Bueno",
+                                                "overall": 86
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Vasconcelos",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Gazin",
+                                                "overall": 85
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Hugão",
+                                                "overall": 93
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Othavyo Japa",
+                                                "overall": 88
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Amâncio",
+                                                "overall": 87
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Brian",
+                                                "overall": 84
+                                }
+                ],
+                "IELEMEC2 2024": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Bueno",
+                                                "overall": 88
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Vasconcelos",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Gazin",
+                                                "overall": 87
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Hugão",
+                                                "overall": 93
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Othavyo Japa",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Amâncio",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Brian",
+                                                "overall": 85
+                                }
+                ],
+                "IELEMEC2 2023": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Bueno",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Vasconcelos",
+                                                "overall": 79
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Gazin",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Hugão",
+                                                "overall": 95
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Othavyo Japa",
+                                                "overall": 87
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Amâncio",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Brian",
+                                                "overall": 82
+                                }
+                ],
+                "IELEMEC3 2026": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Antony",
+                                                "overall": 85
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Nilson",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Diogo",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Igor",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Enzão",
+                                                "overall": 91
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Enzo preto",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Breno",
+                                                "overall": 83
+                                }
+                ],
+                "IELEMEC3 2025": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Antony",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Nilson",
+                                                "overall": 79
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Diogo",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Igor",
+                                                "overall": 81
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Enzão",
+                                                "overall": 88
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Enzo preto",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Breno",
+                                                "overall": 81
+                                }
+                ],
+                "IELEMEC3 2024": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Antony",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Nilson",
+                                                "overall": 77
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Diogo",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Igor",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Enzão",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Enzo preto",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Breno",
+                                                "overall": 82
+                                }
+                ],
+                "IELEMEC5 2026": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Enzo",
+                                                "overall": 85
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Amaral",
+                                                "overall": 90
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Eliézer",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Lucas",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Echaporã",
+                                                "overall": 86
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Saulo",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Filipe",
+                                                "overall": 84
+                                }
+                ],
+                "IDEV2 2025": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Henry",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Lipe",
+                                                "overall": 91
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Felipe",
+                                                "overall": 85
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Japonês",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Letzel",
+                                                "overall": 86
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Pedrão",
+                                                "overall": 95
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Kauan",
+                                                "overall": 83
+                                }
+                ],
+                "IDEV2 2024": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Henry",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Lipe",
+                                                "overall": 90
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Felipe",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Japonês",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Letzel",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Pedrão",
+                                                "overall": 93
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Kauan",
+                                                "overall": 80
+                                }
+                ],
+                "IDEV2 2023": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Henry",
+                                                "overall": 79
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Lipe",
+                                                "overall": 92
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Felipe",
+                                                "overall": 86
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Japonês",
+                                                "overall": 80
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Letzel",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Pedrão",
+                                                "overall": 94
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Kauan",
+                                                "overall": 81
+                                }
+                ],
+                "IDEV3 2026": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Kashima",
+                                                "overall": 81
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Manuzão",
+                                                "overall": 81
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Lucas",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Azeitona",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Baiano",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Marks",
+                                                "overall": 89
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Loko",
+                                                "overall": 80
+                                }
+                ],
+                "IDEV3 2025": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Kashima",
+                                                "overall": 80
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Manuzão",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Lucas",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Azeitona",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Baiano",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Marks",
+                                                "overall": 88
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Loko",
+                                                "overall": 80
+                                }
+                ],
+                "IDEV3 2024": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Kashima",
+                                                "overall": 78
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Manuzão",
+                                                "overall": 80
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Lucas",
+                                                "overall": 81
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Azeitona",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Baiano",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Marks",
+                                                "overall": 87
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Loko",
+                                                "overall": 80
+                                }
+                ],
+                "IDEV4 2026": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Malcom",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Biro",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Luis gustavo",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Isaque",
+                                                "overall": 85
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Garcia",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Jãozin",
+                                                "overall": 90
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "David",
+                                                "overall": 84
+                                }
+                ],
+                "IDEV4 2025": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Malcom",
+                                                "overall": 81
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Hugão",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Luis gustavo",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Isaque",
+                                                "overall": 84
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Garcia",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Jãozin",
+                                                "overall": 88
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "David",
+                                                "overall": 83
+                                }
+                ],
+                "IDEV5 2026": [
+                                {
+                                                "position": "GOL",
+                                                "name": "Cardoso",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Elias",
+                                                "overall": 78
+                                },
+                                {
+                                                "position": "ZAG",
+                                                "name": "Miguel Leandro",
+                                                "overall": 80
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Otávio",
+                                                "overall": 83
+                                },
+                                {
+                                                "position": "ALA",
+                                                "name": "Samuel",
+                                                "overall": 82
+                                },
+                                {
+                                                "position": "MEI",
+                                                "name": "Daniel",
+                                                "overall": 88
+                                },
+                                {
+                                                "position": "ATA",
+                                                "name": "Pedro",
+                                                "overall": 82
+                                }
+                ]
+};
+
+            ROOM_LIST.forEach(roomKey => {
+                const players = realPlayerData[roomKey] || [];
+                db[roomKey] = players.map(playerData => ({
+                    id: `P_${globalId++}`,
+                    name: playerData.name,
+                    position: playerData.position,
+                    overall: playerData.overall,
+                    room: roomKey
+                }));
+            });
+
+            return db;
+        }
+
+        const TEAMS_DATABASE = generateTeamDatabase();
+
+        /**
+         * FORMATIONS CONFIGURATION (Fut7 strictly 1 GK + 6 field players)
+         * Coordinates in percentage relative to field container top/left.
+         */
+        const FORMATIONS = {
+            '1-2-3-1': {
+                name: '1-2-3-1',
+                breakdownText: '2 Zagueiros, 1 Meia, 2 Alas e 1 Atacante',
+                slots: [
+                    { id: 's_gol', label: 'GOL', pos: 'GOL', top: 88, left: 50 },
+                    { id: 's_zag1', label: 'ZAG', pos: 'ZAG', top: 70, left: 32 },
+                    { id: 's_zag2', label: 'ZAG', pos: 'ZAG', top: 70, left: 68 },
+                    { id: 's_ala1', label: 'ALA', pos: 'ALA', top: 46, left: 16 },
+                    { id: 's_mei', label: 'MEI', pos: 'MEI', top: 48, left: 50 },
+                    { id: 's_ala2', label: 'ALA', pos: 'ALA', top: 46, left: 84 },
+                    { id: 's_ata', label: 'ATA', pos: 'ATA', top: 20, left: 50 }
+                ]
+            },
+            '1-1-2-3': {
+                name: '1-1-2-3',
+                breakdownText: '1 Zagueiro, 2 Meias, 2 Alas e 1 Atacante',
+                slots: [
+                    { id: 's_gol', label: 'GOL', pos: 'GOL', top: 88, left: 50 },
+                    { id: 's_zag1', label: 'ZAG', pos: 'ZAG', top: 72, left: 50 },
+                    { id: 's_mei1', label: 'MEI', pos: 'MEI', top: 52, left: 35 },
+                    { id: 's_mei2', label: 'MEI', pos: 'MEI', top: 52, left: 65 },
+                    { id: 's_ala1', label: 'ALA', pos: 'ALA', top: 30, left: 18 },
+                    { id: 's_ata', label: 'ATA', pos: 'ATA', top: 20, left: 50 },
+                    { id: 's_ala2', label: 'ALA', pos: 'ALA', top: 30, left: 82 }
+                ]
+            },
+            '1-3-2-1': {
+                name: '1-3-2-1',
+                breakdownText: '3 Zagueiros, 2 Meias e 1 Atacante',
+                slots: [
+                    { id: 's_gol', label: 'GOL', pos: 'GOL', top: 88, left: 50 },
+                    { id: 's_zag1', label: 'ZAG', pos: 'ZAG', top: 70, left: 24 },
+                    { id: 's_zag2', label: 'ZAG', pos: 'ZAG', top: 72, left: 50 },
+                    { id: 's_zag3', label: 'ZAG', pos: 'ZAG', top: 70, left: 76 },
+                    { id: 's_mei1', label: 'MEI', pos: 'MEI', top: 45, left: 36 },
+                    { id: 's_mei2', label: 'MEI', pos: 'MEI', top: 45, left: 64 },
+                    { id: 's_ata', label: 'ATA', pos: 'ATA', top: 20, left: 50 }
+                ]
+            }
+        };
+
+        const gameState = {
+            selectedFormationKey: '1-2-3-1',
+            selectedMode: 'classic', // 'classic' | 'blind'
+            userSquad: [], // Items: { slotId, player, captain: boolean }
+            currentDrawnRoom: null,
+            captainPlayerId: null,
+            currentPhase: 'SETUP', // SETUP, DRAFT, CAPTAIN, BRACKET, MATCH_PLAY, SUMMARY
+            bracket: {
+                oitavas: [],
+                quartas: [],
+                semi: [],
+                final: []
+            },
+            currentMatchIndex: 0,
+            currentBracketStage: 'oitavas', // oitavas, quartas, semi, final
+            userEliminated: false,
+            campaignStats: {
+                games: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0
+            },
+            tournamentAllPlayers: [], // Track stats across whole tournament for awards
+            tournamentPlayerStatsMap: {}, // Global map: { playerId: { player, teamName, games, goals, assists, ratings: [] } }
+            userPlayerStatsMap: {}, // { playerId: { games, goals, assists, ratings: [] } }
+            
+            // LIVE MATCH SIMULATION STATE
+            activeMatch: null,
+            matchTimer: null,
+            matchCurrentHalf: '1T', // '1T', 'HALF_TIME', '2T', 'FINISHED'
+            matchCurrentMin: 0,
+            matchCurrentSec: 0,
+            matchSpeedMultiplier: 1, // 1x, 2x, 4x
+            isMatchPlaying: false,
+            matchPreCalculatedEvents: [],
+            matchLiveScoreA: 0,
+            matchLiveScoreB: 0,
+            matchLiveTimeline: [],
+            matchPenaltiesData: null
+        };
+
+        window.onload = function() {
+            selectFormation('1-2-3-1');
+            selectMode('classic');
+            renderSetupPitch();
+        };
+
+        function setPhaseBadge(label) {
+            const badgeText = document.getElementById('game-phase-label');
+            if (badgeText) badgeText.textContent = label;
+        }
+
+        function showScreen(screenId) {
+            const screens = ['screen-setup', 'screen-draft', 'screen-captain', 'screen-tournament', 'screen-match-play', 'screen-summary'];
+            screens.forEach(s => {
+                const el = document.getElementById(s);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(screenId);
+            if (target) target.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectFormation(key) {
+            gameState.selectedFormationKey = key;
+            
+            // Update UI buttons
+            document.querySelectorAll('.fmt-btn').forEach(btn => {
+                btn.classList.remove('bg-black', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-900');
+            });
+            const activeBtn = document.getElementById(`btn-fmt-${key}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-gray-900');
+                activeBtn.classList.add('bg-black', 'text-white');
+            }
+
+            document.getElementById('setup-fmt-display').textContent = key;
+            document.getElementById('formation-breakdown').textContent = FORMATIONS[key].breakdownText;
+            renderSetupPitch();
+        }
+
+        function selectMode(mode) {
+            gameState.selectedMode = mode;
+            
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('bg-black', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-900');
+            });
+
+            const activeBtn = document.getElementById(`btn-mode-${mode}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-gray-900');
+                activeBtn.classList.add('bg-black', 'text-white');
+            }
+        }
+
+        function renderSetupPitch() {
+            const container = document.getElementById('setup-pitch-nodes');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const slots = FORMATIONS[gameState.selectedFormationKey].slots;
+            slots.forEach(slot => {
+                const node = document.createElement('div');
+                node.className = 'absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center';
+                node.style.top = `${slot.top}%`;
+                node.style.left = `${slot.left}%`;
+
+                node.innerHTML = `
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-dashed border-white bg-black/40 flex items-center justify-center font-sports text-white text-xs font-bold shadow-md">
+                        ${slot.label}
+                    </div>
+                    <div class="mt-1 bg-black/80 text-white text-[10px] font-sports px-2 py-0.5 rounded border border-white/20">
+                        ${slot.pos}
+                    </div>
+                `;
+                container.appendChild(node);
+            });
+        }
+
+        function startDrafting() {
+            gameState.currentPhase = 'DRAFT';
+            gameState.userSquad = [];
+            setPhaseBadge('SORTEIO DO ELENCO');
+            showScreen('screen-draft');
+            
+            drawNextRoom();
+            renderDraftPitchAndBoxScore();
+        }
+
+        function drawNextRoom() {
+            // Draw random room key (Sorteio pode repetir!)
+            const randomIndex = Math.floor(Math.random() * ROOM_LIST.length);
+            const roomKey = ROOM_LIST[randomIndex];
+            gameState.currentDrawnRoom = roomKey;
+
+            const parts = roomKey.split(' ');
+            const roomName = parts[0];
+            const roomYear = parts[1] || '';
+
+            document.getElementById('drawn-room-name').textContent = roomName;
+            document.getElementById('drawn-room-year').textContent = roomYear;
+
+            // Determine unfilled slots in selected formation
+            const formationSlots = FORMATIONS[gameState.selectedFormationKey].slots;
+            const filledSlotIds = gameState.userSquad.map(item => item.slotId);
+            const openSlots = formationSlots.filter(s => !filledSlotIds.includes(s.id));
+            const openPositions = Array.from(new Set(openSlots.map(s => s.pos)));
+
+            document.getElementById('needed-positions-tag').textContent = `Faltam: ${openPositions.join(', ')}`;
+
+            // Get room players and render list
+            const roomPlayers = TEAMS_DATABASE[roomKey] || [];
+            const listContainer = document.getElementById('draft-players-list');
+            listContainer.innerHTML = '';
+
+            roomPlayers.forEach((player, idx) => {
+                // Check if player position is currently needed in user squad
+                const isCompatible = openPositions.includes(player.position);
+                
+                const card = document.createElement('div');
+                card.className = `retro-card p-2.5 flex items-center justify-between border-2 transition-all ${
+                    isCompatible 
+                        ? 'border-black hover:border-red-600 bg-white cursor-pointer hover:shadow-md' 
+                        : 'border-gray-200 bg-gray-100 opacity-60 cursor-not-allowed'
+                }`;
+
+                const displayOvr = gameState.selectedMode === 'blind' ? '?' : player.overall;
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gray-900 text-white font-sports font-bold rounded-full flex items-center justify-center text-xs">
+                            #${idx + 1}
+                        </div>
+                        <div>
+                            <div class="font-sports text-sm font-bold text-gray-900 leading-none">${player.name}</div>
+                            <div class="text-[10px] text-gray-500 font-semibold mt-1 flex items-center gap-1">
+                                <span class="bg-gray-200 border border-gray-300 text-gray-800 px-1 py-0.2 rounded">${player.position}</span>
+                                ${!isCompatible ? '<span class="text-red-500">(Sem vaga no esquema)</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <div class="font-sports text-lg font-bold ${gameState.selectedMode === 'blind' ? 'text-red-600 font-extrabold' : 'text-gray-900'}">
+                            ${displayOvr} ${gameState.selectedMode === 'classic' ? '<span class="text-[10px] font-normal text-gray-500">OVR</span>' : ''}
+                        </div>
+                        ${isCompatible ? '<i class="fa-solid fa-plus text-xs text-red-600"></i>' : ''}
+                    </div>
+                `;
+
+                if (isCompatible) {
+                    card.onclick = () => chooseDraftPlayer(player);
+                }
+
+                listContainer.appendChild(card);
+            });
+        }
+
+        function chooseDraftPlayer(player) {
+            const formationSlots = FORMATIONS[gameState.selectedFormationKey].slots;
+            const filledSlotIds = gameState.userSquad.map(item => item.slotId);
+
+            // Find first available matching position slot
+            const targetSlot = formationSlots.find(s => s.pos === player.position && !filledSlotIds.includes(s.id));
+
+            if (!targetSlot) return; // Guard clause
+
+            // Add player clone to user squad
+            gameState.userSquad.push({
+                slotId: targetSlot.id,
+                player: { ...player },
+                captain: false
+            });
+
+            // Re-render draft pitch & box score
+            renderDraftPitchAndBoxScore();
+
+            // Check if squad complete (7 players)
+            if (gameState.userSquad.length >= 7) {
+                // Squad drafting finished, move to captain selection
+                setTimeout(() => {
+                    initCaptainSelection();
+                }, 400);
+            } else {
+                // Auto draw next room randomly
+                drawNextRoom();
+            }
+        }
+
+        function renderDraftPitchAndBoxScore() {
+            const formationSlots = FORMATIONS[gameState.selectedFormationKey].slots;
+            const container = document.getElementById('draft-pitch-nodes');
+            const boxList = document.getElementById('draft-box-score-list');
+            
+            if (container) container.innerHTML = '';
+            if (boxList) boxList.innerHTML = '';
+
+            document.getElementById('draft-count-badge').textContent = gameState.userSquad.length;
+            document.getElementById('box-score-count').textContent = `${gameState.userSquad.length} / 7`;
+
+            let sumOvr = 0;
+            let countOvr = 0;
+
+            formationSlots.forEach(slot => {
+                const assigned = gameState.userSquad.find(item => item.slotId === slot.id);
+                
+                // 1. Render Pitch Node
+                const node = document.createElement('div');
+                node.className = 'absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center transition-all duration-300';
+                node.style.top = `${slot.top}%`;
+                node.style.left = `${slot.left}%`;
+
+                if (assigned) {
+                    sumOvr += assigned.player.overall;
+                    countOvr++;
+                    const displayOvr = gameState.selectedMode === 'blind' ? '?' : assigned.player.overall;
+
+                    node.innerHTML = `
+                        <div class="w-11 h-11 md:w-12 md:h-12 rounded-full border-2 border-black bg-white flex flex-col items-center justify-center font-sports text-gray-900 shadow-md relative">
+                            <span class="text-xs font-bold leading-none">${assigned.player.position}</span>
+                            <span class="text-[10px] text-red-600 font-extrabold leading-none mt-0.5">${displayOvr}</span>
+                        </div>
+                        <div class="mt-1 bg-black text-white text-[10px] font-sports px-2 py-0.5 rounded border border-white/20 max-w-[90px] truncate text-center">
+                            ${assigned.player.name}
+                        </div>
+                    `;
+                } else {
+                    node.innerHTML = `
+                        <div class="w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-dashed border-white/80 bg-black/40 flex items-center justify-center font-sports text-white text-xs font-bold shadow-md">
+                            ${slot.label}
+                        </div>
+                        <div class="mt-1 bg-black/70 text-white text-[10px] font-sports px-2 py-0.5 rounded border border-white/20">
+                            ${slot.pos}
+                        </div>
+                    `;
+                }
+                if (container) container.appendChild(node);
+
+                // 2. Render Box Score item
+                const boxItem = document.createElement('div');
+                boxItem.className = 'flex items-center justify-between py-1 border-b border-gray-100 text-xs';
+                
+                if (assigned) {
+                    const displayOvr = gameState.selectedMode === 'blind' ? '?' : assigned.player.overall;
+                    boxItem.innerHTML = `
+                        <span class="font-sports font-bold text-gray-500 w-8">${slot.pos}</span>
+                        <span class="font-sports text-gray-900 font-semibold truncate flex-1 mx-2">${assigned.player.name}</span>
+                        <span class="font-sports font-bold text-red-600">${displayOvr}</span>
+                    `;
+                } else {
+                    boxItem.innerHTML = `
+                        <span class="font-sports font-bold text-gray-400 w-8">${slot.pos}</span>
+                        <span class="text-gray-400 font-mono flex-1 mx-2">—</span>
+                        <span class="text-gray-400 font-mono">—</span>
+                    `;
+                }
+                if (boxList) boxList.appendChild(boxItem);
+            });
+
+            // Overall Team Summary
+            const ovrVal = countOvr > 0 ? Math.round(sumOvr / countOvr) : '--';
+            document.getElementById('draft-ovr-value').textContent = gameState.selectedMode === 'blind' && countOvr < 7 ? '?' : ovrVal;
+        }
+
+        function initCaptainSelection() {
+            gameState.currentPhase = 'CAPTAIN';
+            setPhaseBadge('ESCOLHA DE CAPITÃO');
+            showScreen('screen-captain');
+
+            // Calculate overall
+            let totalOvr = 0;
+            gameState.userSquad.forEach(item => totalOvr += item.player.overall);
+            const avgOvr = Math.round(totalOvr / 7);
+            document.getElementById('captain-squad-ovr').textContent = avgOvr;
+
+            renderCaptainPitchAndList();
+        }
+
+        function renderCaptainPitchAndList() {
+            const pitchContainer = document.getElementById('captain-pitch-nodes');
+            const listContainer = document.getElementById('captain-selector-list');
+            const formationSlots = FORMATIONS[gameState.selectedFormationKey].slots;
+
+            if (pitchContainer) pitchContainer.innerHTML = '';
+            if (listContainer) listContainer.innerHTML = '';
+
+            // Render Selector List
+            gameState.userSquad.forEach(item => {
+                const player = item.player;
+                const isSelected = gameState.captainPlayerId === player.id;
+                
+                const card = document.createElement('div');
+                card.className = `retro-card p-3 flex items-center justify-between cursor-pointer transition-all border-2 ${
+                    isSelected ? 'border-yellow-500 bg-yellow-50 shadow-md' : 'border-gray-200 hover:border-black bg-white'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 ${isSelected ? 'badge-captain' : 'bg-gray-900 text-white'} font-sports font-bold rounded-full flex items-center justify-center text-xs">
+                            ${isSelected ? 'C' : player.position}
+                        </div>
+                        <div>
+                            <div class="font-sports text-sm font-bold text-gray-900 leading-none">${player.name}</div>
+                            <div class="text-[10px] text-gray-500 mt-0.5">${player.room}</div>
+                        </div>
+                    </div>
+                    <div class="font-sports text-base font-bold text-gray-900">
+                        ${player.overall} OVR
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    gameState.captainPlayerId = player.id;
+                    gameState.userSquad.forEach(sq => sq.captain = (sq.player.id === player.id));
+                    document.getElementById('btn-confirm-captain').disabled = false;
+                    renderCaptainPitchAndList();
+                };
+
+                if (listContainer) listContainer.appendChild(card);
+            });
+
+            // Render Field Nodes
+            formationSlots.forEach(slot => {
+                const assigned = gameState.userSquad.find(item => item.slotId === slot.id);
+                if (!assigned) return;
+
+                const node = document.createElement('div');
+                node.className = 'absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center';
+                node.style.top = `${slot.top}%`;
+                node.style.left = `${slot.left}%`;
+
+                const isCapt = assigned.player.id === gameState.captainPlayerId;
+
+                node.innerHTML = `
+                    <div class="w-12 h-12 rounded-full border-2 border-black bg-white flex flex-col items-center justify-center font-sports text-gray-900 shadow-md relative">
+                        ${isCapt ? '<span class="absolute -top-1 -right-1 badge-captain px-1 text-[9px] rounded-full shadow">C</span>' : ''}
+                        <span class="text-xs font-bold leading-none">${assigned.player.position}</span>
+                        <span class="text-[10px] text-red-600 font-extrabold leading-none mt-0.5">${assigned.player.overall}</span>
+                    </div>
+                    <div class="mt-1 bg-black text-white text-[10px] font-sports px-2 py-0.5 rounded border border-white/20 max-w-[90px] truncate text-center">
+                        ${assigned.player.name}
+                    </div>
+                `;
+                if (pitchContainer) pitchContainer.appendChild(node);
+            });
+        }
+
+        function confirmCaptainAndStart() {
+            if (!gameState.captainPlayerId) return;
+            initTournamentBracket();
+        }
+
+        function initTournamentBracket() {
+            gameState.currentPhase = 'BRACKET';
+            gameState.currentBracketStage = 'oitavas';
+            gameState.currentMatchIndex = 0;
+            gameState.userEliminated = false;
+            setPhaseBadge('MATA-MATA (OITAVAS)');
+
+            // Initialize player stats tracking map for user squad
+            gameState.userSquad.forEach(sq => {
+                gameState.userPlayerStatsMap[sq.player.id] = {
+                    player: sq.player,
+                    teamName: 'SEU TIME',
+                    games: 0,
+                    goals: 0,
+                    assists: 0,
+                    ratings: []
+                };
+                gameState.tournamentPlayerStatsMap[sq.player.id] = gameState.userPlayerStatsMap[sq.player.id];
+            });
+
+            // Initialize tournament players map for all CPU teams
+            ROOM_LIST.forEach(roomKey => {
+                const teamPlayers = TEAMS_DATABASE[roomKey] || [];
+                teamPlayers.forEach(p => {
+                    if (!gameState.tournamentPlayerStatsMap[p.id]) {
+                        gameState.tournamentPlayerStatsMap[p.id] = {
+                            player: p,
+                            teamName: roomKey,
+                            games: 0,
+                            goals: 0,
+                            assists: 0,
+                            ratings: []
+                        };
+                    }
+                });
+            });
+
+            // Draw 15 random opposition teams from available room list
+            const shuffledRooms = [...ROOM_LIST].sort(() => 0.5 - Math.random());
+            const oitavasMatches = [];
+
+            // User match will be index 0
+            oitavasMatches.push({
+                matchId: 'oitavas_0',
+                teamA: { name: 'SEU TIME', isUser: true, ovr: getSquadAverageOvr(gameState.userSquad) },
+                teamB: { name: shuffledRooms[0], isUser: false, ovr: getCpuTeamAverageOvr(shuffledRooms[0]) },
+                played: false,
+                winner: null,
+                scoreA: 0,
+                scoreB: 0,
+                penaltyScoreA: null,
+                penaltyScoreB: null,
+                timeline: []
+            });
+
+            // Remaining 7 oitavas matches between CPU teams
+            for (let i = 1; i < 8; i++) {
+                const tA = shuffledRooms[i * 2 - 1] || 'IDEV2 2024';
+                const tB = shuffledRooms[i * 2] || 'IELEMEC3 2025';
+                oitavasMatches.push({
+                    matchId: `oitavas_${i}`,
+                    teamA: { name: tA, isUser: false, ovr: getCpuTeamAverageOvr(tA) },
+                    teamB: { name: tB, isUser: false, ovr: getCpuTeamAverageOvr(tB) },
+                    played: false,
+                    winner: null,
+                    scoreA: 0,
+                    scoreB: 0,
+                    penaltyScoreA: null,
+                    penaltyScoreB: null,
+                    timeline: []
+                });
+            }
+
+            gameState.bracket.oitavas = oitavasMatches;
+            gameState.bracket.quartas = [];
+            gameState.bracket.semi = [];
+            gameState.bracket.final = [];
+
+            renderBracketView();
+            showScreen('screen-tournament');
+        }
+
+        function getSquadAverageOvr(squad) {
+            let sum = 0;
+            squad.forEach(sq => sum += sq.player.overall);
+            return Math.round(sum / squad.length);
+        }
+
+        function getCpuTeamAverageOvr(roomKey) {
+            const players = TEAMS_DATABASE[roomKey] || [];
+            if (players.length === 0) return 75;
+            let sum = 0;
+            players.forEach(p => sum += p.overall);
+            return Math.round(sum / players.length);
+        }
+
+        function renderBracketView() {
+            const container = document.getElementById('bracket-display-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const stage = gameState.currentBracketStage; // oitavas, quartas, semi, final
+            const stageMatches = gameState.bracket[stage] || [];
+
+            // Update Header Phase Title
+            const stageNames = {
+                'oitavas': 'OITAVAS DE FINAL (16 TIMES)',
+                'quartas': 'QUARTAS DE FINAL (8 TIMES)',
+                'semi': 'SEMIFINAL (4 TIMES)',
+                'final': 'GRANDE FINAL (2 TIMES)'
+            };
+            document.getElementById('tournament-phase-title').textContent = stageNames[stage] || 'MATA-MATA';
+
+            // Highlight phase badges top right
+            ['oitavas', 'quartas', 'semi', 'final'].forEach(stg => {
+                const el = document.getElementById(`phase-badge-${stg}`);
+                if (!el) return;
+                if (stg === stage) {
+                    el.className = 'px-3 py-1.5 border border-black rounded bg-black text-white font-bold';
+                } else {
+                    el.className = 'px-3 py-1.5 border border-black rounded bg-gray-100 text-gray-400';
+                }
+            });
+
+            // Render match cards for current stage
+            stageMatches.forEach((match, idx) => {
+                const card = document.createElement('div');
+                const isUserMatch = match.teamA.isUser || match.teamB.isUser;
+                
+                card.className = `retro-card p-3 border-2 ${
+                    isUserMatch ? 'border-red-600 bg-red-50/40 shadow-sm' : 'border-gray-300 bg-white'
+                }`;
+
+                let statusHtml = '';
+                if (match.played) {
+                    const penText = match.penaltyScoreA !== null ? ` (${match.penaltyScoreA} x ${match.penaltyScoreB} pen)` : '';
+                    statusHtml = `<span class="font-sports font-bold text-gray-900 text-base">${match.scoreA} - ${match.scoreB}${penText}</span>`;
+                } else {
+                    statusHtml = `<span class="text-xs font-sports text-gray-400">A JOGAR</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center text-xs font-sports text-gray-500 mb-1">
+                        <span>CONFRONTO #${idx + 1}</span>
+                        ${isUserMatch ? '<span class="bg-red-600 text-white px-1.5 py-0.2 rounded font-bold text-[10px]">SEU JOGO</span>' : ''}
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex flex-col">
+                            <span class="font-sports text-sm font-bold ${match.teamA.isUser ? 'text-red-600' : 'text-gray-900'}">
+                                ${match.teamA.name} ${match.winner === match.teamA.name ? '✓' : ''}
+                            </span>
+                            <span class="font-sports text-sm font-bold ${match.teamB.isUser ? 'text-red-600' : 'text-gray-900'}">
+                                ${match.teamB.name} ${match.winner === match.teamB.name ? '✓' : ''}
+                            </span>
+                        </div>
+                        <div class="text-right">
+                            ${statusHtml}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Update Next User Match Box on Right Side
+            const userMatch = stageMatches.find(m => m.teamA.isUser || m.teamB.isUser);
+            if (userMatch && !userMatch.played) {
+                const opp = userMatch.teamA.isUser ? userMatch.teamB : userMatch.teamA;
+                document.getElementById('match-user-team-name').textContent = 'SEU TIME';
+                document.getElementById('match-opp-team-name').textContent = opp.name;
+                document.getElementById('match-opp-ovr').textContent = `OVR ESTIMADO: ${opp.ovr}`;
+            }
+        }
+
+        function prepareAndLaunchMatch() {
+            const stage = gameState.currentBracketStage;
+            const stageMatches = gameState.bracket[stage];
+            const userMatch = stageMatches.find(m => (m.teamA.isUser || m.teamB.isUser) && !m.played);
+
+            if (!userMatch) return;
+
+            // Simulate all CPU matches in this stage first
+            stageMatches.forEach(m => {
+                if (!m.teamA.isUser && !m.teamB.isUser && !m.played) {
+                    simulateCpuMatch(m);
+                }
+            });
+
+            // Pre-calculate full timeline & events for real-time play
+            setupUserMatchPreCalculations(userMatch);
+            
+            // Show match screen in PAUSED state ready for user to click play
+            initMatchSimulationUI(userMatch);
+        }
+
+        function simulateCpuMatch(match) {
+            // CPU Match using real player rosters from database
+            const teamAPlayers = TEAMS_DATABASE[match.teamA.name] || [];
+            const teamBPlayers = TEAMS_DATABASE[match.teamB.name] || [];
+
+            const diff = match.teamA.ovr - match.teamB.ovr;
+            let scoreA = Math.floor(Math.random() * 3) + (diff > 0 ? 1 : 0);
+            let scoreB = Math.floor(Math.random() * 3) + (diff < 0 ? 1 : 0);
+
+            // Record goals and assists in global stats map
+            for (let i = 0; i < scoreA; i++) {
+                if (teamAPlayers.length > 0) {
+                    const scorer = teamAPlayers[Math.floor(Math.random() * teamAPlayers.length)];
+                    const st = gameState.tournamentPlayerStatsMap[scorer.id];
+                    if (st) st.goals++;
+
+                    const assisters = teamAPlayers.filter(p => p.id !== scorer.id);
+                    if (assisters.length > 0 && Math.random() < 0.65) {
+                        const assister = assisters[Math.floor(Math.random() * assisters.length)];
+                        const ast = gameState.tournamentPlayerStatsMap[assister.id];
+                        if (ast) ast.assists++;
+                    }
+                }
+            }
+
+            for (let i = 0; i < scoreB; i++) {
+                if (teamBPlayers.length > 0) {
+                    const scorer = teamBPlayers[Math.floor(Math.random() * teamBPlayers.length)];
+                    const st = gameState.tournamentPlayerStatsMap[scorer.id];
+                    if (st) st.goals++;
+
+                    const assisters = teamBPlayers.filter(p => p.id !== scorer.id);
+                    if (assisters.length > 0 && Math.random() < 0.65) {
+                        const assister = assisters[Math.floor(Math.random() * assisters.length)];
+                        const ast = gameState.tournamentPlayerStatsMap[assister.id];
+                        if (ast) ast.assists++;
+                    }
+                }
+            }
+
+            // Register games played
+            [...teamAPlayers, ...teamBPlayers].forEach(p => {
+                const st = gameState.tournamentPlayerStatsMap[p.id];
+                if (st) {
+                    st.games++;
+                    st.ratings.push(parseFloat((6.5 + Math.random() * 2.5).toFixed(1)));
+                }
+            });
+
+            match.scoreA = scoreA;
+            match.scoreB = scoreB;
+
+            if (scoreA === scoreB) {
+                // Penalties
+                const penA = Math.floor(Math.random() * 2) + 4;
+                const penB = penA === 5 ? 4 : 5;
+                match.penaltyScoreA = penA;
+                match.penaltyScoreB = penB;
+                match.winner = penA > penB ? match.teamA.name : match.teamB.name;
+            } else {
+                match.winner = scoreA > scoreB ? match.teamA.name : match.teamB.name;
+            }
+            match.played = true;
+        }
+
+        function setupUserMatchPreCalculations(match) {
+            gameState.activeMatch = match;
+            const oppTeamName = match.teamA.isUser ? match.teamB.name : match.teamA.name;
+            const oppPlayers = TEAMS_DATABASE[oppTeamName] || [];
+            const userSquad = gameState.userSquad;
+
+            const userFieldPlayers = userSquad.filter(s => s.player.position !== 'GOL').map(s => s.player);
+            const oppFieldPlayers = oppPlayers.filter(p => p.position !== 'GOL');
+
+            const events = [];
+
+            // Helper to generate goals for a half
+            function generateHalfEvents(halfLabel) {
+                // Fut7 half duration: 25 minutes
+                [3, 7, 11, 15, 19, 23].forEach(minute => {
+                    if (Math.random() < 0.38) {
+                        const isUserGoal = Math.random() < 0.52;
+
+                        if (isUserGoal) {
+                            const scorer = userFieldPlayers[Math.floor(Math.random() * userFieldPlayers.length)];
+                            let assister = null;
+                            if (Math.random() < 0.7) {
+                                const availAssisters = userFieldPlayers.filter(p => p.id !== scorer.id);
+                                if (availAssisters.length > 0) {
+                                    assister = availAssisters[Math.floor(Math.random() * availAssisters.length)];
+                                }
+                            }
+                            const isPenalty = Math.random() < 0.12;
+
+                            events.push({
+                                half: halfLabel,
+                                minute: minute,
+                                second: Math.floor(Math.random() * 50) + 5,
+                                team: 'USER',
+                                type: isPenalty ? 'GOAL_PENALTY' : 'GOAL',
+                                scorer: scorer,
+                                assister: assister,
+                                teamName: 'SEU TIME'
+                            });
+                        } else {
+                            // Opposition Goal (RESERVED SPECIFIC OPPOSITION PLAYER FROM ROSTER)
+                            const scorer = oppFieldPlayers.length > 0 
+                                ? oppFieldPlayers[Math.floor(Math.random() * oppFieldPlayers.length)]
+                                : { name: 'Jogador 07', position: 'ATA' };
+                            
+                            let assister = null;
+                            if (Math.random() < 0.65 && oppFieldPlayers.length > 1) {
+                                const availAssisters = oppFieldPlayers.filter(p => p.id !== scorer.id);
+                                if (availAssisters.length > 0) {
+                                    assister = availAssisters[Math.floor(Math.random() * availAssisters.length)];
+                                }
+                            }
+
+                            events.push({
+                                half: halfLabel,
+                                minute: minute,
+                                second: Math.floor(Math.random() * 50) + 5,
+                                team: 'OPP',
+                                type: 'GOAL',
+                                scorer: scorer,
+                                assister: assister,
+                                teamName: oppTeamName
+                            });
+                        }
+                    }
+                });
+            }
+
+            generateHalfEvents('1T');
+            generateHalfEvents('2T');
+
+            // Penalty Missed Event chance
+            if (Math.random() < 0.18) {
+                const missMin = Math.floor(Math.random() * 20) + 2;
+                const kicker = userFieldPlayers[Math.floor(Math.random() * userFieldPlayers.length)];
+                events.push({
+                    half: Math.random() < 0.5 ? '1T' : '2T',
+                    minute: missMin,
+                    second: 30,
+                    team: 'USER',
+                    type: 'PENALTY_MISSED',
+                    scorer: kicker,
+                    teamName: 'SEU TIME'
+                });
+            }
+
+            // Sort events chronologically
+            events.sort((a, b) => {
+                if (a.half !== b.half) return a.half === '1T' ? -1 : 1;
+                if (a.minute !== b.minute) return a.minute - b.minute;
+                return a.second - b.second;
+            });
+
+            gameState.matchPreCalculatedEvents = events;
+        }
+
+        function initMatchSimulationUI(match) {
+            gameState.currentPhase = 'MATCH_PLAY';
+            setPhaseBadge('PARTIDA EM ANDAMENTO');
+            showScreen('screen-match-play');
+
+            // Reset simulation timers & live scores
+            if (gameState.matchTimer) clearInterval(gameState.matchTimer);
+            gameState.matchTimer = null;
+            gameState.isMatchPlaying = false;
+            gameState.matchCurrentHalf = '1T';
+            gameState.matchCurrentMin = 0;
+            gameState.matchCurrentSec = 0;
+            gameState.matchSpeedMultiplier = 1;
+            gameState.matchLiveScoreA = 0;
+            gameState.matchLiveScoreB = 0;
+            gameState.matchLiveTimeline = [];
+            gameState.matchPenaltiesData = null;
+
+            document.getElementById('match-view-phase').textContent = gameState.currentBracketStage.toUpperCase();
+            document.getElementById('match-teamA-name').textContent = match.teamA.name;
+            document.getElementById('match-teamB-name').textContent = match.teamB.name;
+            document.getElementById('match-teamA-fmt').textContent = gameState.selectedFormationKey;
+            
+            document.getElementById('match-score-A').textContent = '0';
+            document.getElementById('match-score-B').textContent = '0';
+
+            document.getElementById('live-match-half').textContent = '1T';
+            document.getElementById('live-match-time').textContent = '00:00';
+            document.getElementById('live-match-status-badge').textContent = 'PAUSADO';
+
+            // Controls
+            document.getElementById('match-half-time-banner').classList.add('hidden');
+            document.getElementById('penalty-shootout-container').classList.add('hidden');
+            document.getElementById('btn-next-after-match').disabled = true;
+            document.getElementById('btn-next-after-match').textContent = 'AGUARDANDO FIM DA PARTIDA...';
+
+            updateMatchPlayPauseButton();
+            renderLiveTimeline();
+            renderLiveRatings();
+        }
+
+        function toggleMatchPlayback() {
+            if (gameState.matchCurrentHalf === 'HALF_TIME' || gameState.matchCurrentHalf === 'FINISHED') return;
+
+            if (gameState.isMatchPlaying) {
+                pauseMatch();
+            } else {
+                startMatchClock();
+            }
+        }
+
+        function setMatchSpeed(multiplier) {
+            gameState.matchSpeedMultiplier = multiplier;
+            
+            // Highlight active button
+            [1, 2, 4].forEach(s => {
+                const btn = document.getElementById(`btn-speed-${s}`);
+                if (!btn) return;
+                if (s === multiplier) {
+                    btn.className = 'speed-btn retro-btn px-2 py-0.5 text-xs bg-black text-white';
+                } else {
+                    btn.className = 'speed-btn retro-btn px-2 py-0.5 text-xs bg-white text-gray-800';
+                }
+            });
+
+            if (gameState.isMatchPlaying) {
+                // Restart timer with new speed interval
+                pauseMatch();
+                startMatchClock();
+            }
+        }
+
+        function startMatchClock() {
+            if (gameState.isMatchPlaying) return;
+            gameState.isMatchPlaying = true;
+            
+            document.getElementById('live-match-status-badge').textContent = 'AO VIVO';
+            document.getElementById('live-match-status-badge').className = 'bg-red-600 text-white border border-black px-2 py-0.5 rounded text-[10px] font-sports font-bold animate-pulse';
+            
+            updateMatchPlayPauseButton();
+
+            // Interval tick (1 real second = 1 match minute at 1x speed; accelerated per speed factor)
+            const tickRateMs = Math.round(1000 / gameState.matchSpeedMultiplier);
+
+            gameState.matchTimer = setInterval(() => {
+                advanceMatchTick();
+            }, tickRateMs);
+        }
+
+        function pauseMatch() {
+            gameState.isMatchPlaying = false;
+            if (gameState.matchTimer) {
+                clearInterval(gameState.matchTimer);
+                gameState.matchTimer = null;
+            }
+
+            document.getElementById('live-match-status-badge').textContent = 'PAUSADO';
+            document.getElementById('live-match-status-badge').className = 'bg-yellow-100 border border-black px-2 py-0.5 rounded text-[10px] font-sports font-bold text-gray-800';
+            
+            updateMatchPlayPauseButton();
+        }
+
+        function updateMatchPlayPauseButton() {
+            const btn = document.getElementById('btn-match-start-pause');
+            const icon = document.getElementById('icon-match-play-pause');
+            const lbl = document.getElementById('lbl-match-play-pause');
+
+            if (!btn || !icon || !lbl) return;
+
+            if (gameState.isMatchPlaying) {
+                icon.className = 'fa-solid fa-pause';
+                lbl.textContent = 'PAUSAR';
+            } else {
+                icon.className = 'fa-solid fa-play';
+                lbl.textContent = gameState.matchCurrentMin === 0 && gameState.matchCurrentHalf === '1T' ? 'INICIAR PARTIDA' : 'CONTINUAR';
+            }
+        }
+
+        function advanceMatchTick() {
+            gameState.matchCurrentMin++;
+
+            // Format minute clock string
+            const minStr = String(gameState.matchCurrentMin).padStart(2, '0');
+            document.getElementById('live-match-time').textContent = `${minStr}:00`;
+
+            // Check if any events occur at this exact minute & half
+            const currentHalf = gameState.matchCurrentHalf;
+            const currentMin = gameState.matchCurrentMin;
+
+            const occurringEvents = gameState.matchPreCalculatedEvents.filter(ev => ev.half === currentHalf && ev.minute === currentMin);
+
+            occurringEvents.forEach(ev => {
+                triggerLiveEvent(ev);
+            });
+
+            // Update live ratings dynamically as game progresses
+            renderLiveRatings();
+
+            // Check for Half-Time (25 minutes)
+            if (currentHalf === '1T' && currentMin >= 25) {
+                pauseMatch();
+                gameState.matchCurrentHalf = 'HALF_TIME';
+                document.getElementById('live-match-half').textContent = 'INTERVALO';
+                
+                // Show Interval Banner
+                document.getElementById('half-banner-title').textContent = 'INTERVALO';
+                document.getElementById('half-banner-subtitle').textContent = `Placar parcial: SEU TIME ${gameState.matchLiveScoreA} × ${gameState.matchLiveScoreB} ${gameState.activeMatch.teamB.name}`;
+                document.getElementById('match-half-time-banner').classList.remove('hidden');
+            } 
+            // Check for Full-Time (25 minutes in 2T)
+            else if (currentHalf === '2T' && currentMin >= 25) {
+                pauseMatch();
+                gameState.matchCurrentHalf = 'FINISHED';
+                document.getElementById('live-match-half').textContent = 'FIM';
+                document.getElementById('live-match-status-badge').textContent = 'ENCERRADO';
+                document.getElementById('live-match-status-badge').className = 'bg-black text-white px-2 py-0.5 rounded text-[10px] font-sports font-bold';
+
+                finalizeFullTimeMatch();
+            }
+        }
+
+        function triggerLiveEvent(ev) {
+            gameState.matchLiveTimeline.push(ev);
+
+            // Update scores
+            if (ev.type === 'GOAL' || ev.type === 'GOAL_PENALTY') {
+                if (ev.team === 'USER') {
+                    gameState.matchLiveScoreA++;
+                    document.getElementById('match-score-A').textContent = gameState.matchLiveScoreA;
+                    document.getElementById('match-score-A').classList.add('animate-goal');
+                    setTimeout(() => document.getElementById('match-score-A').classList.remove('animate-goal'), 500);
+                } else {
+                    gameState.matchLiveScoreB++;
+                    document.getElementById('match-score-B').textContent = gameState.matchLiveScoreB;
+                    document.getElementById('match-score-B').classList.add('animate-goal');
+                    setTimeout(() => document.getElementById('match-score-B').classList.remove('animate-goal'), 500);
+                }
+            }
+
+            renderLiveTimeline();
+        }
+
+        function advanceToSecondHalf() {
+            document.getElementById('match-half-time-banner').classList.add('hidden');
+            gameState.matchCurrentHalf = '2T';
+            gameState.matchCurrentMin = 0;
+            document.getElementById('live-match-half').textContent = '2T';
+            document.getElementById('live-match-time').textContent = '00:00';
+            
+            startMatchClock();
+        }
+
+        function finalizeFullTimeMatch() {
+            const match = gameState.activeMatch;
+            match.scoreA = gameState.matchLiveScoreA;
+            match.scoreB = gameState.matchLiveScoreB;
+            match.timeline = gameState.matchLiveTimeline;
+
+            // Check if tie requires Extra time & Shootout
+            if (match.scoreA === match.scoreB) {
+                // Shootout 5 kicks
+                const userSquad = gameState.userSquad;
+                const oppTeamName = match.teamA.isUser ? match.teamB.name : match.teamA.name;
+                const oppPlayers = TEAMS_DATABASE[oppTeamName] || [];
+
+                let pA = 0;
+                let pB = 0;
+                const shootoutKicks = [];
+
+                for (let k = 1; k <= 5; k++) {
+                    const kickerA = userSquad[(k - 1) % userSquad.length].player;
+                    const kickerB = oppPlayers[(k - 1) % oppPlayers.length] || { name: `Jogador #${k}` };
+
+                    const successA = Math.random() < 0.75;
+                    if (successA) pA++;
+
+                    const successB = Math.random() < 0.70;
+                    if (successB) pB++;
+
+                    shootoutKicks.push({
+                        round: k,
+                        kickerA: kickerA.name,
+                        successA: successA,
+                        kickerB: kickerB.name,
+                        successB: successB
+                    });
+                }
+
+                if (pA === pB) {
+                    pA += 1; // User sudden death victory
+                    shootoutKicks.push({
+                        round: 6,
+                        kickerA: userSquad[0].player.name,
+                        successA: true,
+                        kickerB: oppPlayers[0] ? oppPlayers[0].name : 'Jogador #6',
+                        successB: false
+                    });
+                }
+
+                match.penaltyScoreA = match.teamA.isUser ? pA : pB;
+                match.penaltyScoreB = match.teamA.isUser ? pB : pA;
+                gameState.matchPenaltiesData = shootoutKicks;
+
+                match.winner = (match.teamA.isUser ? pA > pB : pB > pA) ? match.teamA.name : match.teamB.name;
+
+                // Render Penalties shoot UI
+                const penBox = document.getElementById('penalty-shootout-container');
+                penBox.classList.remove('hidden');
+                const penList = document.getElementById('penalty-shots-list');
+                penList.innerHTML = '';
+
+                shootoutKicks.forEach(p => {
+                    const pRow = document.createElement('div');
+                    pRow.className = 'flex justify-between items-center py-1 border-b border-gray-200';
+                    pRow.innerHTML = `
+                        <span>${p.round}ª cobrança:</span>
+                        <span>Seu time — ${p.kickerA} ${p.successA ? '⚽' : '❌'}</span>
+                        <span>${oppTeamName} — ${p.kickerB} ${p.successB ? '⚽' : '❌'}</span>
+                    `;
+                    penList.appendChild(pRow);
+                });
+
+                document.getElementById('penalty-final-score').textContent = 
+                    `DESFECHO NOS PÊNALTIS: SEU TIME ${match.penaltyScoreA} × ${match.penaltyScoreB} ADVERSÁRIO`;
+
+            } else {
+                match.winner = match.scoreA > match.scoreB ? match.teamA.name : match.teamB.name;
+            }
+
+            match.played = true;
+
+            // Commit match stats permanently to player histories
+            commitMatchStatsToDatabase(match);
+
+            // Enable continue button
+            document.getElementById('btn-next-after-match').disabled = false;
+            document.getElementById('btn-next-after-match').textContent = 'CONTINUAR →';
+        }
+
+        function commitMatchStatsToDatabase(match) {
+            const userScore = match.scoreA;
+            const oppScore = match.scoreB;
+
+            // Campaign totals
+            gameState.campaignStats.games++;
+            gameState.campaignStats.gf += userScore;
+            gameState.campaignStats.ga += oppScore;
+            
+            if (match.winner === 'SEU TIME') {
+                gameState.campaignStats.wins++;
+            } else {
+                gameState.campaignStats.losses++;
+            }
+
+            // Track individual goal & assist events
+            match.timeline.forEach(ev => {
+                if (ev.type === 'GOAL' || ev.type === 'GOAL_PENALTY') {
+                    if (ev.scorer && ev.scorer.id) {
+                        const st = gameState.tournamentPlayerStatsMap[ev.scorer.id];
+                        if (st) st.goals++;
+                    }
+                    if (ev.assister && ev.assister.id) {
+                        const ast = gameState.tournamentPlayerStatsMap[ev.assister.id];
+                        if (ast) ast.assists++;
+                    }
+                }
+            });
+
+            // Register match played and calculated ratings for User Squad
+            gameState.userSquad.forEach(sq => {
+                const pId = sq.player.id;
+                const stats = gameState.userPlayerStatsMap[pId];
+                stats.games++;
+
+                let baseRating = 6.8 + (stats.goals * 0.4) + (stats.assists * 0.3);
+                if (userScore > oppScore) baseRating += 0.8;
+                const finalRating = Math.min(10.0, Math.max(5.0, baseRating + (Math.random() * 0.8 - 0.4)));
+
+                stats.ratings.push(parseFloat(finalRating.toFixed(1)));
+            });
+        }
+
+        function renderLiveTimeline() {
+            const timelineContainer = document.getElementById('match-events-timeline');
+            if (!timelineContainer) return;
+            timelineContainer.innerHTML = '';
+
+            if (gameState.matchLiveTimeline.length === 0) {
+                timelineContainer.innerHTML = `<div class="text-center py-6 text-xs font-mono text-gray-400">Aguardando lances da partida...</div>`;
+                return;
+            }
+
+            // Render in reverse so latest event is at top
+            const reversed = [...gameState.matchLiveTimeline].reverse();
+
+            reversed.forEach(ev => {
+                const row = document.createElement('div');
+                row.className = 'retro-card p-2.5 bg-white border border-gray-300 flex items-center justify-between text-xs';
+
+                if (ev.type === 'GOAL' || ev.type === 'GOAL_PENALTY') {
+                    const isUser = ev.team === 'USER';
+                    const scorerName = ev.scorer ? ev.scorer.name : 'Jogador';
+                    const assText = ev.assister ? `<span class="text-gray-500 font-normal"> (ASS: ${ev.assister.name} — ${ev.teamName})</span>` : ' <span class="text-gray-400 font-normal">(Sem assistência)</span>';
+                    const penText = ev.type === 'GOAL_PENALTY' ? '<span class="text-red-600 font-bold"> [PÊNALTI]</span>' : '';
+
+                    row.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            <span class="font-sports font-bold text-gray-500 w-12">${ev.half} ${String(ev.minute).padStart(2, '0')}'</span>
+                            <span class="text-base">⚽</span>
+                            <span class="font-sports font-bold ${isUser ? 'text-gray-900' : 'text-gray-700'}">
+                                ${scorerName} — ${ev.teamName}${assText}${penText}
+                            </span>
+                        </div>
+                        <span class="text-[10px] font-sports font-bold ${isUser ? 'text-red-600' : 'text-gray-500'}">
+                            ${isUser ? 'SUA EQUIPE' : 'ADVERSÁRIO'}
+                        </span>
+                    `;
+                } else if (ev.type === 'PENALTY_MISSED') {
+                    row.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            <span class="font-sports font-bold text-gray-500 w-12">${ev.half} ${String(ev.minute).padStart(2, '0')}'</span>
+                            <span class="text-base">❌</span>
+                            <span class="font-sports font-bold text-red-600">${ev.scorer.name} — ${ev.teamName} [PÊNALTI PERDIDO]</span>
+                        </div>
+                        <span class="text-[10px] font-sports font-bold text-red-600">SUA EQUIPE</span>
+                    `;
+                }
+                timelineContainer.appendChild(row);
+            });
+        }
+
+        function renderLiveRatings() {
+            const ratingsList = document.getElementById('match-player-ratings-list');
+            if (!ratingsList) return;
+            ratingsList.innerHTML = '';
+            
+            gameState.userSquad.forEach(sq => {
+                const pId = sq.player.id;
+                
+                // Calculate live rating dynamic estimation
+                let currentRating = 6.5;
+                
+                // Add points if player scored in this live match
+                gameState.matchLiveTimeline.forEach(ev => {
+                    if (ev.team === 'USER' && ev.scorer && ev.scorer.id === pId) {
+                        currentRating += 1.2;
+                    }
+                    if (ev.team === 'USER' && ev.assister && ev.assister.id === pId) {
+                        currentRating += 0.8;
+                    }
+                });
+
+                currentRating = Math.min(10.0, Math.max(5.5, currentRating));
+
+                const rRow = document.createElement('div');
+                rRow.className = 'flex items-center justify-between text-xs py-1.5 border-b border-gray-100';
+                rRow.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="font-sports font-bold text-gray-500 w-7">${sq.player.position}</span>
+                        <span class="font-sports font-bold text-gray-900">${sq.player.name}</span>
+                        ${sq.captain ? '<span class="badge-captain text-[9px] px-1 rounded">C</span>' : ''}
+                    </div>
+                    <span class="font-sports font-bold text-sm text-red-600">${currentRating.toFixed(1)}</span>
+                `;
+                ratingsList.appendChild(rRow);
+            });
+        }
+
+        function proceedAfterMatch() {
+            const stage = gameState.currentBracketStage;
+            const stageMatches = gameState.bracket[stage];
+            const userMatch = stageMatches.find(m => m.teamA.isUser || m.teamB.isUser);
+
+            if (userMatch.winner !== 'SEU TIME') {
+                // User eliminated!
+                gameState.userEliminated = true;
+                showTournamentSummary();
+                return;
+            }
+
+            // User WON match! Advance to next stage in bracket
+            if (stage === 'oitavas') {
+                advanceBracketToStage('quartas');
+            } else if (stage === 'quartas') {
+                advanceBracketToStage('semi');
+            } else if (stage === 'semi') {
+                advanceBracketToStage('final');
+            } else if (stage === 'final') {
+                // Champion!
+                showTournamentSummary();
+            }
+        }
+
+        function advanceBracketToStage(nextStage) {
+            const prevStage = gameState.currentBracketStage;
+            const prevMatches = gameState.bracket[prevStage];
+            const winners = prevMatches.map(m => m.winner);
+
+            const nextMatches = [];
+            for (let i = 0; i < winners.length; i += 2) {
+                const teamA = winners[i];
+                const teamB = winners[i + 1];
+
+                const isUserA = teamA === 'SEU TIME';
+                const isUserB = teamB === 'SEU TIME';
+
+                nextMatches.push({
+                    matchId: `${nextStage}_${i / 2}`,
+                    teamA: { name: teamA, isUser: isUserA, ovr: isUserA ? getSquadAverageOvr(gameState.userSquad) : getCpuTeamAverageOvr(teamA) },
+                    teamB: { name: teamB, isUser: isUserB, ovr: isUserB ? getSquadAverageOvr(gameState.userSquad) : getCpuTeamAverageOvr(teamB) },
+                    played: false,
+                    winner: null,
+                    scoreA: 0,
+                    scoreB: 0,
+                    penaltyScoreA: null,
+                    penaltyScoreB: null,
+                    timeline: []
+                });
+            }
+
+            gameState.bracket[nextStage] = nextMatches;
+            gameState.currentBracketStage = nextStage;
+            setPhaseBadge(`MATA-MATA (${nextStage.toUpperCase()})`);
+
+            renderBracketView();
+            showScreen('screen-tournament');
+        }
+
+        function showTournamentSummary() {
+            gameState.currentPhase = 'SUMMARY';
+            setPhaseBadge('PREMIAÇÕES E STATS');
+            showScreen('screen-summary');
+
+            const isChampion = !gameState.userEliminated && gameState.currentBracketStage === 'final';
+
+            // Summary Banner Updates
+            const banner = document.getElementById('summary-banner');
+            const trophy = document.getElementById('summary-trophy-icon');
+            const title = document.getElementById('summary-title');
+            const subtitle = document.getElementById('summary-subtitle');
+
+            if (isChampion) {
+                banner.className = 'retro-card p-6 bg-yellow-400 border-2 border-black text-center';
+                trophy.textContent = '🏆';
+                title.textContent = 'CAMPEÃO GINCANA 4x0!';
+                subtitle.textContent = 'Parabéns! Sua equipe venceu a grande final e sagrou-se campeã!';
+            } else {
+                banner.className = 'retro-card p-6 bg-red-100 border-2 border-black text-center';
+                trophy.textContent = '❌';
+                title.textContent = 'FIM DE CAMPEONATO';
+                subtitle.textContent = `Sua equipe foi eliminada na fase: ${gameState.currentBracketStage.toUpperCase()}.`;
+            }
+
+            // Campaign Stats
+            const cs = gameState.campaignStats;
+            document.getElementById('stat-team-games').textContent = cs.games;
+            document.getElementById('stat-team-wins').textContent = cs.wins;
+            document.getElementById('stat-team-draws').textContent = cs.draws;
+            document.getElementById('stat-team-losses').textContent = cs.losses;
+            document.getElementById('stat-team-gf').textContent = cs.gf;
+            document.getElementById('stat-team-ga').textContent = cs.ga;
+            const gd = cs.gf - cs.ga;
+            document.getElementById('stat-team-gd').textContent = (gd >= 0 ? `+${gd}` : `${gd}`);
+
+            // Calculate Individual Awards from whole tournament database
+            let allTournamentPlayers = Object.values(gameState.tournamentPlayerStatsMap);
+
+            let topScorer = null;
+            let topAssister = null;
+            let mvpPlayer = null;
+
+            let maxGoals = -1;
+            let maxAssists = -1;
+            let maxAvgRating = -1;
+
+            allTournamentPlayers.forEach(st => {
+                const sumR = st.ratings.reduce((a, b) => a + b, 0);
+                const avgR = st.ratings.length > 0 ? (sumR / st.ratings.length) : (st.player.overall / 10);
+
+                if (st.goals > maxGoals) {
+                    maxGoals = st.goals;
+                    topScorer = st;
+                }
+                if (st.assists > maxAssists) {
+                    maxAssists = st.assists;
+                    topAssister = st;
+                }
+                if (avgR > maxAvgRating) {
+                    maxAvgRating = avgR;
+                    mvpPlayer = st;
+                }
+            });
+
+            // MVP Display
+            if (mvpPlayer) {
+                document.getElementById('award-mvp-name').textContent = mvpPlayer.player.name;
+                document.getElementById('award-mvp-team').textContent = mvpPlayer.teamName;
+                document.getElementById('award-mvp-stats').textContent = `Média: ${maxAvgRating.toFixed(1)} OVR`;
+            }
+
+            // Scorer Display
+            if (topScorer) {
+                document.getElementById('award-scorer-name').textContent = topScorer.player.name;
+                document.getElementById('award-scorer-team').textContent = topScorer.teamName;
+                document.getElementById('award-scorer-stats').textContent = `${maxGoals} Gols`;
+            }
+
+            // Assister Display
+            if (topAssister) {
+                document.getElementById('award-assister-name').textContent = topAssister.player.name;
+                document.getElementById('award-assister-team').textContent = topAssister.teamName;
+                document.getElementById('award-assister-stats').textContent = `${maxAssists} Assistências`;
+            }
+
+            // Populate User Squad Table
+            const tbody = document.getElementById('user-squad-stats-tbody');
+            tbody.innerHTML = '';
+
+            gameState.userSquad.forEach(sq => {
+                const p = sq.player;
+                const stats = gameState.userPlayerStatsMap[p.id];
+                const sumR = stats.ratings.reduce((a, b) => a + b, 0);
+                const avgR = stats.ratings.length > 0 ? (sumR / stats.ratings.length).toFixed(1) : '--';
+
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-200 hover:bg-gray-50';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-2 font-sports font-bold text-gray-900 flex items-center gap-1">
+                        ${p.name}
+                        ${sq.captain ? '<span class="badge-captain text-[9px] px-1 rounded">C</span>' : ''}
+                    </td>
+                    <td class="py-2.5 px-2 font-sports text-gray-600">${p.position}</td>
+                    <td class="py-2.5 px-2 text-center font-sports font-bold text-gray-900">${p.overall}</td>
+                    <td class="py-2.5 px-2 text-center font-sports">${stats.games}</td>
+                    <td class="py-2.5 px-2 text-center font-sports font-bold text-red-600">${stats.goals}</td>
+                    <td class="py-2.5 px-2 text-center font-sports font-bold text-blue-600">${stats.assists}</td>
+                    <td class="py-2.5 px-2 text-center font-sports font-extrabold text-gray-900">${avgR}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function restartGame() {
+            if (gameState.matchTimer) clearInterval(gameState.matchTimer);
+            gameState.userSquad = [];
+            gameState.captainPlayerId = null;
+            gameState.campaignStats = { games: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0 };
+            gameState.userPlayerStatsMap = {};
+            gameState.tournamentPlayerStatsMap = {};
+            
+            setPhaseBadge('FASE DE SETUP');
+            showScreen('screen-setup');
+        }
+    </script>
+</body>
+</html>
