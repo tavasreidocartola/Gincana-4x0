@@ -284,6 +284,10 @@
                         <i class="fa-solid fa-rotate text-gray-400 text-xs"></i>
                         <span>As turmas podem se repetir nos próximos sorteios.</span>
                     </div>
+                    <div class="grid grid-cols-2 gap-2 mt-3">
+                        <button id="btn-reroll-team" onclick="rerollTeam()" class="retro-btn bg-white py-2 px-2 text-[11px] font-sports">RE-ROLL TIME <span id="reroll-team-count">1</span>x</button>
+                        <button id="btn-reroll-year" onclick="rerollYear()" class="retro-btn bg-white py-2 px-2 text-[11px] font-sports">RE-ROLL ANO <span id="reroll-year-count">1</span>x</button>
+                    </div>
                 </div>
 
                 <!-- Available Players List -->
@@ -707,698 +711,734 @@
             let globalId = 1;
 
             const realPlayerData = {
-                "IELEMEC4 2025": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Vitin",
-                                                "overall": 85
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Thiago",
-                                                "overall": 85
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Giovanne",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Tavares",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Enzo",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Negro",
-                                                "overall": 86
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Kevin",
-                                                "overall": 85
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Lê",
-                                                "overall": 92
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Vini",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "João",
-                                                "overall": 89
-                                }
-                ],
-                "IELEMEC4 2026": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Vitin",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Thiago",
-                                                "overall": 91
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Giovanne",
-                                                "overall": 92
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Tavares",
-                                                "overall": 93
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Enzo",
-                                                "overall": 92
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Negro",
-                                                "overall": 87
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Kevin",
-                                                "overall": 87
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Vini",
-                                                "overall": 92
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "João",
-                                                "overall": 91
-                                }
-                ],
-                "IELEMEC2 2025": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Bueno",
-                                                "overall": 86
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Vasconcelos",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Gazin",
-                                                "overall": 85
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Hugão",
-                                                "overall": 93
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Othavyo Japa",
-                                                "overall": 88
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Amâncio",
-                                                "overall": 87
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Brian",
-                                                "overall": 84
-                                }
-                ],
-                "IELEMEC2 2024": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Bueno",
-                                                "overall": 88
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Vasconcelos",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Gazin",
-                                                "overall": 87
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Hugão",
-                                                "overall": 93
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Othavyo Japa",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Amâncio",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Brian",
-                                                "overall": 85
-                                }
-                ],
-                "IELEMEC2 2023": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Bueno",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Vasconcelos",
-                                                "overall": 79
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Gazin",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Hugão",
-                                                "overall": 95
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Othavyo Japa",
-                                                "overall": 87
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Amâncio",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Brian",
-                                                "overall": 82
-                                }
-                ],
-                "IELEMEC3 2026": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Antony",
-                                                "overall": 85
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Nilson",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Diogo",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Igor",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Enzão",
-                                                "overall": 91
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Enzo preto",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Breno",
-                                                "overall": 83
-                                }
-                ],
-                "IELEMEC3 2025": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Antony",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Nilson",
-                                                "overall": 79
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Diogo",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Igor",
-                                                "overall": 81
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Enzão",
-                                                "overall": 88
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Enzo preto",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Breno",
-                                                "overall": 81
-                                }
-                ],
-                "IELEMEC3 2024": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Antony",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Nilson",
-                                                "overall": 77
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Diogo",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Igor",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Enzão",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Enzo preto",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Breno",
-                                                "overall": 82
-                                }
-                ],
-                "IELEMEC5 2026": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Enzo",
-                                                "overall": 85
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Amaral",
-                                                "overall": 90
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Eliézer",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Lucas",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Echaporã",
-                                                "overall": 86
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Saulo",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Filipe",
-                                                "overall": 84
-                                }
-                ],
-                "IDEV2 2025": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Henry",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Lipe",
-                                                "overall": 91
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Felipe",
-                                                "overall": 85
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Japonês",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Letzel",
-                                                "overall": 86
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Pedrão",
-                                                "overall": 95
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Kauan",
-                                                "overall": 83
-                                }
-                ],
-                "IDEV2 2024": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Henry",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Lipe",
-                                                "overall": 90
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Felipe",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Japonês",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Letzel",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Pedrão",
-                                                "overall": 93
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Kauan",
-                                                "overall": 80
-                                }
-                ],
-                "IDEV2 2023": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Henry",
-                                                "overall": 79
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Lipe",
-                                                "overall": 92
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Felipe",
-                                                "overall": 86
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Japonês",
-                                                "overall": 80
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Letzel",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Pedrão",
-                                                "overall": 94
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Kauan",
-                                                "overall": 81
-                                }
-                ],
-                "IDEV3 2026": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Kashima",
-                                                "overall": 81
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Manuzão",
-                                                "overall": 81
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Lucas",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Azeitona",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Baiano",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Marks",
-                                                "overall": 89
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Loko",
-                                                "overall": 80
-                                }
-                ],
-                "IDEV3 2025": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Kashima",
-                                                "overall": 80
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Manuzão",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Lucas",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Azeitona",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Baiano",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Marks",
-                                                "overall": 88
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Loko",
-                                                "overall": 80
-                                }
-                ],
-                "IDEV3 2024": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Kashima",
-                                                "overall": 78
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Manuzão",
-                                                "overall": 80
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Lucas",
-                                                "overall": 81
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Azeitona",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Baiano",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Marks",
-                                                "overall": 87
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Loko",
-                                                "overall": 80
-                                }
-                ],
-                "IDEV4 2026": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Malcom",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Biro",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Luis gustavo",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Isaque",
-                                                "overall": 85
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Garcia",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Jãozin",
-                                                "overall": 90
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "David",
-                                                "overall": 84
-                                }
-                ],
-                "IDEV4 2025": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Malcom",
-                                                "overall": 81
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Hugão",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Luis gustavo",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Isaque",
-                                                "overall": 84
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Garcia",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Jãozin",
-                                                "overall": 88
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "David",
-                                                "overall": 83
-                                }
-                ],
-                "IDEV5 2026": [
-                                {
-                                                "position": "GOL",
-                                                "name": "Cardoso",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Elias",
-                                                "overall": 78
-                                },
-                                {
-                                                "position": "ZAG",
-                                                "name": "Miguel Leandro",
-                                                "overall": 80
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Otávio",
-                                                "overall": 83
-                                },
-                                {
-                                                "position": "ALA",
-                                                "name": "Samuel",
-                                                "overall": 82
-                                },
-                                {
-                                                "position": "MEI",
-                                                "name": "Daniel",
-                                                "overall": 88
-                                },
-                                {
-                                                "position": "ATA",
-                                                "name": "Pedro",
-                                                "overall": 82
-                                }
-                ]
-};
+    "IELEMEC2 2023": [
+        {
+            "position": "GOL",
+            "name": "Bueno",
+            "overall": 83
+        },
+        {
+            "position": "ZAG",
+            "name": "Vasconcelos",
+            "overall": 79
+        },
+        {
+            "position": "ZAG",
+            "name": "Gazin",
+            "overall": 83
+        },
+        {
+            "position": "MEI",
+            "name": "Hugão",
+            "overall": 95
+        },
+        {
+            "position": "ALA",
+            "name": "Othavyo Japa",
+            "overall": 87
+        },
+        {
+            "position": "ALA",
+            "name": "Amâncio",
+            "overall": 89
+        },
+        {
+            "position": "ATA",
+            "name": "Brian",
+            "overall": 82
+        }
+    ],
+    "IELEMEC2 2024": [
+        {
+            "position": "GOL",
+            "name": "Bueno",
+            "overall": 87
+        },
+        {
+            "position": "ZAG",
+            "name": "Vasconcelos",
+            "overall": 83
+        },
+        {
+            "position": "ZAG",
+            "name": "Gazin",
+            "overall": 84
+        },
+        {
+            "position": "MEI",
+            "name": "Hugão",
+            "overall": 93
+        },
+        {
+            "position": "ALA",
+            "name": "Othavyo Japa",
+            "overall": 89
+        },
+        {
+            "position": "ALA",
+            "name": "Amâncio",
+            "overall": 89
+        },
+        {
+            "position": "ATA",
+            "name": "Brian",
+            "overall": 81
+        }
+    ],
+    "IELEMEC2 2025": [
+        {
+            "position": "GOL",
+            "name": "Bueno",
+            "overall": 85
+        },
+        {
+            "position": "ZAG",
+            "name": "Vasconcelos",
+            "overall": 82
+        },
+        {
+            "position": "ZAG",
+            "name": "Gazin",
+            "overall": 84
+        },
+        {
+            "position": "MEI",
+            "name": "Hugão",
+            "overall": 93
+        },
+        {
+            "position": "ALA",
+            "name": "Othavyo Japa",
+            "overall": 88
+        },
+        {
+            "position": "ALA",
+            "name": "Amâncio",
+            "overall": 87
+        },
+        {
+            "position": "ATA",
+            "name": "Brian",
+            "overall": 82
+        }
+    ],
+    "IDEV2 2023": [
+        {
+            "position": "GOL",
+            "name": "Henry",
+            "overall": 79
+        },
+        {
+            "position": "ZAG",
+            "name": "Lipe",
+            "overall": 92
+        },
+        {
+            "position": "ZAG",
+            "name": "Felipe",
+            "overall": 86
+        },
+        {
+            "position": "ALA",
+            "name": "Japonês",
+            "overall": 80
+        },
+        {
+            "position": "ALA",
+            "name": "Letzel",
+            "overall": 83
+        },
+        {
+            "position": "MEI",
+            "name": "Pedrão",
+            "overall": 94
+        },
+        {
+            "position": "ATA",
+            "name": "Kauan",
+            "overall": 81
+        }
+    ],
+    "IDEV2 2024": [
+        {
+            "position": "GOL",
+            "name": "Henry",
+            "overall": 80
+        },
+        {
+            "position": "ZAG",
+            "name": "Lipe",
+            "overall": 90
+        },
+        {
+            "position": "ZAG",
+            "name": "Felipe",
+            "overall": 84
+        },
+        {
+            "position": "ALA",
+            "name": "Japonês",
+            "overall": 82
+        },
+        {
+            "position": "ALA",
+            "name": "Letzel",
+            "overall": 84
+        },
+        {
+            "position": "MEI",
+            "name": "Pedrão",
+            "overall": 93
+        },
+        {
+            "position": "ATA",
+            "name": "Kauan",
+            "overall": 80
+        }
+    ],
+    "IDEV2 2025": [
+        {
+            "position": "GOL",
+            "name": "Henry",
+            "overall": 82
+        },
+        {
+            "position": "ZAG",
+            "name": "Lipe",
+            "overall": 91
+        },
+        {
+            "position": "ZAG",
+            "name": "Felipe",
+            "overall": 84
+        },
+        {
+            "position": "ALA",
+            "name": "Japonês",
+            "overall": 80
+        },
+        {
+            "position": "ALA",
+            "name": "Letzel",
+            "overall": 86
+        },
+        {
+            "position": "MEI",
+            "name": "Pedrão",
+            "overall": 95
+        },
+        {
+            "position": "ATA",
+            "name": "Kauan",
+            "overall": 80
+        }
+    ],
+    "IELEMEC3 2024": [
+        {
+            "position": "GOL",
+            "name": "Antony",
+            "overall": 82
+        },
+        {
+            "position": "ZAG",
+            "name": "Nilson",
+            "overall": 77
+        },
+        {
+            "position": "ZAG",
+            "name": "Diogo",
+            "overall": 81
+        },
+        {
+            "position": "MEI",
+            "name": "Igor",
+            "overall": 82
+        },
+        {
+            "position": "ALA",
+            "name": "Enzão",
+            "overall": 90
+        },
+        {
+            "position": "ALA",
+            "name": "Enzo preto",
+            "overall": 82
+        },
+        {
+            "position": "ATA",
+            "name": "Breno",
+            "overall": 78
+        }
+    ],
+    "IELEMEC3 2025": [
+        {
+            "position": "GOL",
+            "name": "Antony",
+            "overall": 81
+        },
+        {
+            "position": "ZAG",
+            "name": "Nilson",
+            "overall": 77
+        },
+        {
+            "position": "ZAG",
+            "name": "Diogo",
+            "overall": 80
+        },
+        {
+            "position": "MEI",
+            "name": "Igor",
+            "overall": 81
+        },
+        {
+            "position": "ALA",
+            "name": "Enzão",
+            "overall": 88
+        },
+        {
+            "position": "ALA",
+            "name": "Enzo preto",
+            "overall": 82
+        },
+        {
+            "position": "ATA",
+            "name": "Breno",
+            "overall": 81
+        }
+    ],
+    "IELEMEC3 2026": [
+        {
+            "position": "GOL",
+            "name": "Antony",
+            "overall": 83
+        },
+        {
+            "position": "ZAG",
+            "name": "Nilson",
+            "overall": 79
+        },
+        {
+            "position": "ZAG",
+            "name": "Diogo",
+            "overall": 81
+        },
+        {
+            "position": "MEI",
+            "name": "Igor",
+            "overall": 80
+        },
+        {
+            "position": "ALA",
+            "name": "Enzão",
+            "overall": 91
+        },
+        {
+            "position": "ALA",
+            "name": "Enzo preto",
+            "overall": 82
+        },
+        {
+            "position": "ATA",
+            "name": "Breno",
+            "overall": 81
+        }
+    ],
+    "IDEV3 2024": [
+        {
+            "position": "GOL",
+            "name": "Kashima",
+            "overall": 78
+        },
+        {
+            "position": "ZAG",
+            "name": "Manuzão",
+            "overall": 79
+        },
+        {
+            "position": "ZAG",
+            "name": "Lucas",
+            "overall": 81
+        },
+        {
+            "position": "ALA",
+            "name": "Azeitona",
+            "overall": 80
+        },
+        {
+            "position": "ALA",
+            "name": "Baiano",
+            "overall": 81
+        },
+        {
+            "position": "MEI",
+            "name": "Marks",
+            "overall": 87
+        },
+        {
+            "position": "ATA",
+            "name": "Loko",
+            "overall": 80
+        }
+    ],
+    "IDEV3 2025": [
+        {
+            "position": "GOL",
+            "name": "Kashima",
+            "overall": 80
+        },
+        {
+            "position": "ZAG",
+            "name": "Manuzão",
+            "overall": 79
+        },
+        {
+            "position": "ZAG",
+            "name": "Lucas",
+            "overall": 83
+        },
+        {
+            "position": "ALA",
+            "name": "Azeitona",
+            "overall": 82
+        },
+        {
+            "position": "ALA",
+            "name": "Baiano",
+            "overall": 82
+        },
+        {
+            "position": "MEI",
+            "name": "Marks",
+            "overall": 88
+        },
+        {
+            "position": "ATA",
+            "name": "Loko",
+            "overall": 80
+        }
+    ],
+    "IDEV3 2026": [
+        {
+            "position": "GOL",
+            "name": "Kashima",
+            "overall": 80
+        },
+        {
+            "position": "ZAG",
+            "name": "Manuzão",
+            "overall": 80
+        },
+        {
+            "position": "ZAG",
+            "name": "Lucas",
+            "overall": 83
+        },
+        {
+            "position": "ALA",
+            "name": "Azeitona",
+            "overall": 82
+        },
+        {
+            "position": "ALA",
+            "name": "Baiano",
+            "overall": 83
+        },
+        {
+            "position": "MEI",
+            "name": "Marks",
+            "overall": 89
+        },
+        {
+            "position": "ATA",
+            "name": "Loko",
+            "overall": 80
+        }
+    ],
+    "IELEMEC4 2025": [
+        {
+            "position": "GOL",
+            "name": "Vitin",
+            "overall": 85
+        },
+        {
+            "position": "ZAG",
+            "name": "Thiago",
+            "overall": 85
+        },
+        {
+            "position": "ZAG",
+            "name": "Giovanne",
+            "overall": 89
+        },
+        {
+            "position": "ZAG",
+            "name": "Tavares",
+            "overall": 89
+        },
+        {
+            "position": "ZAG",
+            "name": "Murilo",
+            "overall": 89
+        },
+        {
+            "position": "ALA",
+            "name": "Enzo",
+            "overall": 89
+        },
+        {
+            "position": "ALA",
+            "name": "Negro",
+            "overall": 86
+        },
+        {
+            "position": "ALA",
+            "name": "Kevin",
+            "overall": 85
+        },
+        {
+            "position": "ALA",
+            "name": "Pisin",
+            "overall": 85
+        },
+        {
+            "position": "ALA",
+            "name": "Lê",
+            "overall": 92
+        },
+        {
+            "position": "MEI",
+            "name": "Isaac",
+            "overall": 79
+        },
+        {
+            "position": "MEI",
+            "name": "Vini",
+            "overall": 89
+        },
+        {
+            "position": "ATA",
+            "name": "João",
+            "overall": 89
+        }
+    ],
+    "IELEMEC4 2026": [
+        {
+            "position": "GOL",
+            "name": "Vitin",
+            "overall": 89
+        },
+        {
+            "position": "ZAG",
+            "name": "Thiago",
+            "overall": 91
+        },
+        {
+            "position": "ZAG",
+            "name": "Giovanne",
+            "overall": 92
+        },
+        {
+            "position": "ZAG",
+            "name": "Tavares",
+            "overall": 93
+        },
+        {
+            "position": "ZAG",
+            "name": "Murilo",
+            "overall": 92
+        },
+        {
+            "position": "ALA",
+            "name": "Luiz Renato",
+            "overall": 89
+        },
+        {
+            "position": "ALA",
+            "name": "Enzo",
+            "overall": 92
+        },
+        {
+            "position": "ALA",
+            "name": "Negro",
+            "overall": 88
+        },
+        {
+            "position": "ALA",
+            "name": "Kevin",
+            "overall": 87
+        },
+        {
+            "position": "ALA",
+            "name": "Pisin",
+            "overall": 86
+        },
+        {
+            "position": "MEI",
+            "name": "Isaac",
+            "overall": 80
+        },
+        {
+            "position": "MEI",
+            "name": "Vini",
+            "overall": 92
+        },
+        {
+            "position": "ATA",
+            "name": "João",
+            "overall": 91
+        }
+    ],
+    "IDEV4 2025": [
+        {
+            "position": "GOL",
+            "name": "Malcom",
+            "overall": 81
+        },
+        {
+            "position": "ZAG",
+            "name": "Hugão",
+            "overall": 83
+        },
+        {
+            "position": "ZAG",
+            "name": "Luis gustavo",
+            "overall": 82
+        },
+        {
+            "position": "ALA",
+            "name": "Isaque",
+            "overall": 84
+        },
+        {
+            "position": "ALA",
+            "name": "Garcia",
+            "overall": 82
+        },
+        {
+            "position": "MEI",
+            "name": "Jãozin",
+            "overall": 88
+        },
+        {
+            "position": "ATA",
+            "name": "David",
+            "overall": 80
+        }
+    ],
+    "IDEV4 2026": [
+        {
+            "position": "GOL",
+            "name": "Malcom",
+            "overall": 82
+        },
+        {
+            "position": "ZAG",
+            "name": "Biro",
+            "overall": 83
+        },
+        {
+            "position": "ZAG",
+            "name": "Luis gustavo",
+            "overall": 84
+        },
+        {
+            "position": "ALA",
+            "name": "Isaque",
+            "overall": 84
+        },
+        {
+            "position": "ALA",
+            "name": "Garcia",
+            "overall": 83
+        },
+        {
+            "position": "MEI",
+            "name": "Jãozin",
+            "overall": 90
+        },
+        {
+            "position": "ATA",
+            "name": "David",
+            "overall": 81
+        }
+    ],
+    "IDEV5 2026": [
+        {
+            "position": "GOL",
+            "name": "Cardoso",
+            "overall": 81
+        },
+        {
+            "position": "ZAG",
+            "name": "Elias",
+            "overall": 78
+        },
+        {
+            "position": "ZAG",
+            "name": "Miguel Leandro",
+            "overall": 80
+        },
+        {
+            "position": "ALA",
+            "name": "Otávio",
+            "overall": 83
+        },
+        {
+            "position": "ALA",
+            "name": "Samuel",
+            "overall": 82
+        },
+        {
+            "position": "MEI",
+            "name": "Daniel",
+            "overall": 88
+        },
+        {
+            "position": "ATA",
+            "name": "Pedro",
+            "overall": 82
+        }
+    ],
+    "IELEMEC5 2026": [
+        {
+            "position": "GOL",
+            "name": "Enzo",
+            "overall": 83
+        },
+        {
+            "position": "ZAG",
+            "name": "Amaral",
+            "overall": 90
+        },
+        {
+            "position": "ZAG",
+            "name": "Eliézer",
+            "overall": 80
+        },
+        {
+            "position": "ALA",
+            "name": "Lucas",
+            "overall": 81
+        },
+        {
+            "position": "ALA",
+            "name": "Echaporã",
+            "overall": 84
+        },
+        {
+            "position": "MEI",
+            "name": "Saulo",
+            "overall": 89
+        },
+        {
+            "position": "ATA",
+            "name": "Filipe",
+            "overall": 82
+        }
+    ]
+}
+
 
             ROOM_LIST.forEach(roomKey => {
                 const players = realPlayerData[roomKey] || [];
@@ -1466,6 +1506,8 @@
             selectedFormationKey: '1-2-3-1',
             selectedMode: 'classic', // 'classic' | 'blind'
             userSquad: [], // Items: { slotId, player, captain: boolean }
+            nextUserPlayerId: 1, // Unique identity for players selected into the user's squad
+            rerolls: { team: 1, year: 1 },
             currentDrawnRoom: null,
             captainPlayerId: null,
             currentPhase: 'SETUP', // SETUP, DRAFT, CAPTAIN, BRACKET, MATCH_PLAY, SUMMARY
@@ -1583,6 +1625,8 @@
         function startDrafting() {
             gameState.currentPhase = 'DRAFT';
             gameState.userSquad = [];
+            gameState.rerolls = { team: 1, year: 1 };
+            gameState.currentDrawnRoom = null;
             setPhaseBadge('SORTEIO DO ELENCO');
             showScreen('screen-draft');
             
@@ -1590,44 +1634,86 @@
             renderDraftPitchAndBoxScore();
         }
 
-        function drawNextRoom() {
-            // Draw random room key (Sorteio pode repetir!)
-            const randomIndex = Math.floor(Math.random() * ROOM_LIST.length);
-            const roomKey = ROOM_LIST[randomIndex];
-            gameState.currentDrawnRoom = roomKey;
+        function normalizePlayerName(name) {
+            return String(name || '').trim().toLocaleLowerCase('pt-BR');
+        }
 
+        function selectedPlayerNames() {
+            return new Set(gameState.userSquad.map(item => normalizePlayerName(item.player.name)));
+        }
+
+        function updateRerollButtons() {
+            const teamBtn = document.getElementById('btn-reroll-team');
+            const yearBtn = document.getElementById('btn-reroll-year');
+            const teamCount = document.getElementById('reroll-team-count');
+            const yearCount = document.getElementById('reroll-year-count');
+
+            if (teamCount) teamCount.textContent = gameState.rerolls.team;
+            if (yearCount) yearCount.textContent = gameState.rerolls.year;
+
+            if (teamBtn) {
+                teamBtn.disabled = gameState.rerolls.team <= 0 || !gameState.currentDrawnRoom;
+                teamBtn.classList.toggle('opacity-50', teamBtn.disabled);
+                teamBtn.classList.toggle('cursor-not-allowed', teamBtn.disabled);
+            }
+
+            const currentBase = gameState.currentDrawnRoom ? gameState.currentDrawnRoom.replace(/\s+\d{4}$/, '') : '';
+            const yearOptions = currentBase
+                ? ROOM_LIST.filter(key => key.replace(/\s+\d{4}$/, '') === currentBase)
+                : [];
+            const hasYearReroll = yearOptions.length > 1;
+
+            if (yearBtn) {
+                yearBtn.disabled = gameState.rerolls.year <= 0 || !gameState.currentDrawnRoom || !hasYearReroll;
+                yearBtn.classList.toggle('opacity-50', yearBtn.disabled);
+                yearBtn.classList.toggle('cursor-not-allowed', yearBtn.disabled);
+                yearBtn.title = hasYearReroll ? '' : 'Esta sala possui apenas um ano disponível.';
+            }
+        }
+
+        function setDrawnRoom(roomKey) {
+            gameState.currentDrawnRoom = roomKey;
             const parts = roomKey.split(' ');
-            const roomName = parts[0];
-            const roomYear = parts[1] || '';
+            const roomName = parts.slice(0, -1).join(' ');
+            const roomYear = parts[parts.length - 1] || '';
 
             document.getElementById('drawn-room-name').textContent = roomName;
             document.getElementById('drawn-room-year').textContent = roomYear;
 
-            // Determine unfilled slots in selected formation
+            renderDraftPlayerOptions();
+            updateRerollButtons();
+        }
+
+        function renderDraftPlayerOptions() {
+            const roomKey = gameState.currentDrawnRoom;
+            if (!roomKey) return;
+
             const formationSlots = FORMATIONS[gameState.selectedFormationKey].slots;
             const filledSlotIds = gameState.userSquad.map(item => item.slotId);
             const openSlots = formationSlots.filter(s => !filledSlotIds.includes(s.id));
             const openPositions = Array.from(new Set(openSlots.map(s => s.pos)));
-
             document.getElementById('needed-positions-tag').textContent = `Faltam: ${openPositions.join(', ')}`;
 
-            // Get room players and render list
             const roomPlayers = TEAMS_DATABASE[roomKey] || [];
             const listContainer = document.getElementById('draft-players-list');
             listContainer.innerHTML = '';
+            const selectedNames = selectedPlayerNames();
 
             roomPlayers.forEach((player, idx) => {
-                // Check if player position is currently needed in user squad
-                const isCompatible = openPositions.includes(player.position);
-                
+                const isDuplicatePlayer = selectedNames.has(normalizePlayerName(player.name));
+                const isCompatible = openPositions.includes(player.position) && !isDuplicatePlayer;
+
                 const card = document.createElement('div');
                 card.className = `retro-card p-2.5 flex items-center justify-between border-2 transition-all ${
-                    isCompatible 
-                        ? 'border-black hover:border-red-600 bg-white cursor-pointer hover:shadow-md' 
+                    isCompatible
+                        ? 'border-black hover:border-red-600 bg-white cursor-pointer hover:shadow-md'
                         : 'border-gray-200 bg-gray-100 opacity-60 cursor-not-allowed'
                 }`;
 
                 const displayOvr = gameState.selectedMode === 'blind' ? '?' : player.overall;
+                let status = '';
+                if (isDuplicatePlayer) status = '<span class="text-red-500">(Já escolhido)</span>';
+                else if (!openPositions.includes(player.position)) status = '<span class="text-red-500">(Sem vaga no esquema)</span>';
 
                 card.innerHTML = `
                     <div class="flex items-center space-x-3">
@@ -1638,11 +1724,10 @@
                             <div class="font-sports text-sm font-bold text-gray-900 leading-none">${player.name}</div>
                             <div class="text-[10px] text-gray-500 font-semibold mt-1 flex items-center gap-1">
                                 <span class="bg-gray-200 border border-gray-300 text-gray-800 px-1 py-0.2 rounded">${player.position}</span>
-                                ${!isCompatible ? '<span class="text-red-500">(Sem vaga no esquema)</span>' : ''}
+                                ${status}
                             </div>
                         </div>
                     </div>
-
                     <div class="flex items-center space-x-2">
                         <div class="font-sports text-lg font-bold ${gameState.selectedMode === 'blind' ? 'text-red-600 font-extrabold' : 'text-gray-900'}">
                             ${displayOvr} ${gameState.selectedMode === 'classic' ? '<span class="text-[10px] font-normal text-gray-500">OVR</span>' : ''}
@@ -1651,15 +1736,47 @@
                     </div>
                 `;
 
-                if (isCompatible) {
-                    card.onclick = () => chooseDraftPlayer(player);
-                }
-
+                if (isCompatible) card.onclick = () => chooseDraftPlayer(player);
                 listContainer.appendChild(card);
             });
         }
 
+        function rerollTeam() {
+            if (gameState.rerolls.team <= 0 || !gameState.currentDrawnRoom) return;
+            const currentYear = gameState.currentDrawnRoom.match(/(\d{4})$/)?.[1];
+            const currentKey = gameState.currentDrawnRoom;
+            const candidates = ROOM_LIST.filter(key => key !== currentKey && key.endsWith(currentYear));
+            if (!candidates.length) return;
+
+            gameState.rerolls.team = 0;
+            const roomKey = candidates[Math.floor(Math.random() * candidates.length)];
+            setDrawnRoom(roomKey);
+        }
+
+        function rerollYear() {
+            if (gameState.rerolls.year <= 0 || !gameState.currentDrawnRoom) return;
+            const match = gameState.currentDrawnRoom.match(/^(.*) (\d{4})$/);
+            if (!match) return;
+
+            const baseRoom = match[1];
+            const currentYear = match[2];
+            const candidates = ROOM_LIST.filter(key => key.startsWith(baseRoom + ' ') && !key.endsWith(currentYear));
+            if (!candidates.length) return;
+
+            gameState.rerolls.year = 0;
+            const roomKey = candidates[Math.floor(Math.random() * candidates.length)];
+            setDrawnRoom(roomKey);
+        }
+
+        function drawNextRoom() {
+            const randomIndex = Math.floor(Math.random() * ROOM_LIST.length);
+            setDrawnRoom(ROOM_LIST[randomIndex]);
+        }
+
         function chooseDraftPlayer(player) {
+            const selectedNames = selectedPlayerNames();
+            if (selectedNames.has(normalizePlayerName(player.name))) return;
+
             const formationSlots = FORMATIONS[gameState.selectedFormationKey].slots;
             const filledSlotIds = gameState.userSquad.map(item => item.slotId);
 
@@ -1668,10 +1785,18 @@
 
             if (!targetSlot) return; // Guard clause
 
-            // Add player clone to user squad
+            // Add a player clone with a unique USER-only identity.
+            // This prevents the same PDF player from sharing stats with their original CPU team
+            // when that room is drawn again as an opponent later in the tournament.
+            const selectedPlayer = {
+                ...player,
+                id: `USER_${gameState.nextUserPlayerId++}`,
+                sourcePlayerId: player.id
+            };
+
             gameState.userSquad.push({
                 slotId: targetSlot.id,
-                player: { ...player },
+                player: selectedPlayer,
                 captain: false
             });
 
@@ -2131,15 +2256,20 @@
                         const isUserGoal = Math.random() < 0.52;
 
                         if (isUserGoal) {
-                            const scorer = userFieldPlayers[Math.floor(Math.random() * userFieldPlayers.length)];
+                            const isPenalty = Math.random() < 0.12;
+                            const captainSquadEntry = gameState.userSquad.find(sq => sq.player.id === gameState.captainPlayerId);
+                            const scorer = isPenalty && captainSquadEntry
+                                ? captainSquadEntry.player
+                                : userFieldPlayers[Math.floor(Math.random() * userFieldPlayers.length)];
                             let assister = null;
-                            if (Math.random() < 0.7) {
+
+                            // Penalty goals never receive an assist.
+                            if (!isPenalty && Math.random() < 0.7) {
                                 const availAssisters = userFieldPlayers.filter(p => p.id !== scorer.id);
                                 if (availAssisters.length > 0) {
                                     assister = availAssisters[Math.floor(Math.random() * availAssisters.length)];
                                 }
                             }
-                            const isPenalty = Math.random() < 0.12;
 
                             events.push({
                                 half: halfLabel,
@@ -2186,7 +2316,8 @@
             // Penalty Missed Event chance
             if (Math.random() < 0.18) {
                 const missMin = Math.floor(Math.random() * 20) + 2;
-                const kicker = userFieldPlayers[Math.floor(Math.random() * userFieldPlayers.length)];
+                const captainSquadEntry = gameState.userSquad.find(sq => sq.player.id === gameState.captainPlayerId);
+                const kicker = captainSquadEntry ? captainSquadEntry.player : userFieldPlayers[Math.floor(Math.random() * userFieldPlayers.length)];
                 events.push({
                     half: Math.random() < 0.5 ? '1T' : '2T',
                     minute: missMin,
@@ -2417,8 +2548,12 @@
                 let pB = 0;
                 const shootoutKicks = [];
 
+                const captainSquadEntry = userSquad.find(sq => sq.player.id === gameState.captainPlayerId);
                 for (let k = 1; k <= 5; k++) {
-                    const kickerA = userSquad[(k - 1) % userSquad.length].player;
+                    // Captain takes the first shootout kick for the user's team.
+                    const kickerA = k === 1 && captainSquadEntry
+                        ? captainSquadEntry.player
+                        : userSquad[(k - 1) % userSquad.length].player;
                     const kickerB = oppPlayers[(k - 1) % oppPlayers.length] || { name: `Jogador #${k}` };
 
                     const successA = Math.random() < 0.75;
@@ -2437,10 +2572,11 @@
                 }
 
                 if (pA === pB) {
+                    const suddenDeathKicker = captainSquadEntry ? captainSquadEntry.player : userSquad[0].player;
                     pA += 1; // User sudden death victory
                     shootoutKicks.push({
                         round: 6,
-                        kickerA: userSquad[0].player.name,
+                        kickerA: suddenDeathKicker.name,
                         successA: true,
                         kickerB: oppPlayers[0] ? oppPlayers[0].name : 'Jogador #6',
                         successB: false
@@ -2496,6 +2632,15 @@
             gameState.campaignStats.gf += userScore;
             gameState.campaignStats.ga += oppScore;
             
+            // Empate no tempo regulamentar é contabilizado separadamente,
+            // mesmo quando o vencedor é definido nos pênaltis.
+            if (userScore === oppScore) {
+                gameState.campaignStats.draws++;
+            }
+
+            // A campanha contabiliza a classificação/eliminação separadamente
+            // do empate regulamentar. Assim, uma vitória nos pênaltis conta como
+            // 1 empate + 1 vitória, e uma derrota nos pênaltis como 1 empate + 1 derrota.
             if (match.winner === 'SEU TIME') {
                 gameState.campaignStats.wins++;
             } else {
@@ -2509,7 +2654,8 @@
                         const st = gameState.tournamentPlayerStatsMap[ev.scorer.id];
                         if (st) st.goals++;
                     }
-                    if (ev.assister && ev.assister.id) {
+                    // A penalty goal has no assist, regardless of any stale event data.
+                    if (ev.type === 'GOAL' && ev.assister && ev.assister.id) {
                         const ast = gameState.tournamentPlayerStatsMap[ev.assister.id];
                         if (ast) ast.assists++;
                     }
@@ -2616,14 +2762,38 @@
             });
         }
 
+        function finishCpuTournamentFromCurrentStage() {
+            // User has been eliminated, but the rest of the bracket must still be completed
+            // so the final champion and tournament awards are based on the whole championship.
+            let stage = gameState.currentBracketStage;
+
+            while (true) {
+                const stageMatches = gameState.bracket[stage] || [];
+
+                stageMatches.forEach(m => {
+                    if (!m.played) simulateCpuMatch(m);
+                });
+
+                if (stage === 'final') break;
+
+                const nextStage = stage === 'oitavas' ? 'quartas' : stage === 'quartas' ? 'semi' : 'final';
+                advanceBracketToStage(nextStage);
+                stage = nextStage;
+            }
+
+            gameState.currentBracketStage = 'final';
+            gameState.currentMatchIndex = 0;
+        }
+
         function proceedAfterMatch() {
             const stage = gameState.currentBracketStage;
             const stageMatches = gameState.bracket[stage];
             const userMatch = stageMatches.find(m => m.teamA.isUser || m.teamB.isUser);
 
             if (userMatch.winner !== 'SEU TIME') {
-                // User eliminated!
+                // User eliminated: finish all remaining rounds before showing awards.
                 gameState.userEliminated = true;
+                finishCpuTournamentFromCurrentStage();
                 showTournamentSummary();
                 return;
             }
@@ -2681,7 +2851,9 @@
             setPhaseBadge('PREMIAÇÕES E STATS');
             showScreen('screen-summary');
 
-            const isChampion = !gameState.userEliminated && gameState.currentBracketStage === 'final';
+            const finalMatch = (gameState.bracket.final || [])[0];
+            const championTeam = finalMatch && finalMatch.winner ? finalMatch.winner : (!gameState.userEliminated ? 'SEU TIME' : '—');
+            const isChampion = !gameState.userEliminated && championTeam === 'SEU TIME';
 
             // Summary Banner Updates
             const banner = document.getElementById('summary-banner');
@@ -2697,8 +2869,8 @@
             } else {
                 banner.className = 'retro-card p-6 bg-red-100 border-2 border-black text-center';
                 trophy.textContent = '❌';
-                title.textContent = 'FIM DE CAMPEONATO';
-                subtitle.textContent = `Sua equipe foi eliminada na fase: ${gameState.currentBracketStage.toUpperCase()}.`;
+                title.textContent = `CAMPEÃO: ${championTeam}`;
+                subtitle.textContent = `Sua equipe foi eliminada na fase: ${gameState.currentBracketStage.toUpperCase()}. O campeonato continuou até a definição do campeão.`;
             }
 
             // Campaign Stats
@@ -2723,19 +2895,23 @@
             let maxAssists = -1;
             let maxAvgRating = -1;
 
-            allTournamentPlayers.forEach(st => {
+            const playedTournamentPlayers = allTournamentPlayers.filter(st => st.games > 0 || st.goals > 0 || st.assists > 0 || st.ratings.length > 0);
+
+            playedTournamentPlayers.forEach(st => {
                 const sumR = st.ratings.reduce((a, b) => a + b, 0);
                 const avgR = st.ratings.length > 0 ? (sumR / st.ratings.length) : (st.player.overall / 10);
 
-                if (st.goals > maxGoals) {
+                // Primary criterion is the real accumulated total; ties are resolved
+                // deterministically so the displayed leader cannot depend on object order.
+                if (st.goals > maxGoals || (st.goals === maxGoals && topScorer && st.assists > topScorer.assists)) {
                     maxGoals = st.goals;
                     topScorer = st;
                 }
-                if (st.assists > maxAssists) {
+                if (st.assists > maxAssists || (st.assists === maxAssists && topAssister && st.goals > topAssister.goals)) {
                     maxAssists = st.assists;
                     topAssister = st;
                 }
-                if (avgR > maxAvgRating) {
+                if (avgR > maxAvgRating || (avgR === maxAvgRating && mvpPlayer && st.goals > mvpPlayer.goals)) {
                     maxAvgRating = avgR;
                     mvpPlayer = st;
                 }
@@ -2793,6 +2969,9 @@
         function restartGame() {
             if (gameState.matchTimer) clearInterval(gameState.matchTimer);
             gameState.userSquad = [];
+            gameState.nextUserPlayerId = 1;
+            gameState.rerolls = { team: 1, year: 1 };
+            gameState.currentDrawnRoom = null;
             gameState.captainPlayerId = null;
             gameState.campaignStats = { games: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0 };
             gameState.userPlayerStatsMap = {};
@@ -2804,3 +2983,4 @@
     </script>
 </body>
 </html>
+Experimente o Plus gratuitamente
