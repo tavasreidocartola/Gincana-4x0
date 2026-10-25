@@ -7,7 +7,10 @@ A versão online mantém a interface do jogo e adiciona salas em tempo real, val
 Requer Node.js 20 ou superior.
 
     npm install
+    npm test
     npm start
+
+`npm test` checks JavaScript syntax, verifies that the browser and server use the same 18 team/year rosters, and checks the Render configuration.
 
 Abra http://localhost:10000 em duas ou mais janelas para testar. Sem REDIS_URL, as salas ficam em memória e são apagadas quando o servidor reinicia.
 
