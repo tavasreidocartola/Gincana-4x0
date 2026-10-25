@@ -186,9 +186,51 @@
     </header>
 
     <main class="w-full max-w-7xl mx-auto flex-1">
+
+        <!-- ONLINE LOBBY -->
+        <section id="screen-online-lobby" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-5 retro-card p-5 bg-white">
+                <div class="text-[10px] font-bold font-sports text-red-600 tracking-widest mb-2">GINCANA 4x0 • ONLINE</div>
+                <h2 class="font-sports text-3xl text-gray-900 mb-2">SALAS ONLINE</h2>
+                <p class="text-sm text-gray-600 mb-5">Crie uma sala ou entre com o código dos seus amigos. Cada participante monta o próprio elenco; o campeonato só começa depois que todos estiverem prontos e o anfitrião liberar.</p>
+                <label for="online-player-name" class="block text-xs font-sports text-gray-600 mb-1">SEU NOME / APELIDO</label>
+                <input id="online-player-name" maxlength="24" autocomplete="nickname" placeholder="Ex.: Tavares" class="w-full border-2 border-black px-3 py-3 mb-4 rounded font-semibold">
+                <button id="btn-online-create" class="retro-btn retro-btn-red w-full py-3 font-sports text-lg mb-4">CRIAR SALA</button>
+                <div class="border-t border-gray-200 pt-4">
+                    <label for="online-room-code-input" class="block text-xs font-sports text-gray-600 mb-1">CÓDIGO DA SALA</label>
+                    <input id="online-room-code-input" maxlength="6" autocomplete="off" placeholder="EX.: A7K9Q" class="w-full border-2 border-black px-3 py-3 mb-2 rounded font-sports text-xl uppercase tracking-widest">
+                    <button id="btn-online-join" class="retro-btn w-full py-3 font-sports text-lg bg-white">ENTRAR NA SALA</button>
+                </div>
+                <div id="online-connection-status" role="status" class="text-xs text-gray-500 mt-4">Conectando ao servidor online…</div>
+                <button id="btn-offline-mode" class="retro-btn retro-btn-dark w-full py-3 mt-5 font-sports">JOGAR OFFLINE</button>
+            </div>
+            <div class="lg:col-span-7 retro-card p-5 bg-yellow-50">
+                <h3 class="font-sports text-2xl mb-2">COMO FUNCIONA</h3>
+                <div class="space-y-3 text-sm text-gray-700">
+                    <p><strong>1.</strong> A sala aceita até 16 participantes.</p>
+                    <p><strong>2.</strong> Cada participante monta os 7 jogadores e escolhe o capitão no próprio navegador.</p>
+                    <p><strong>3.</strong> O anfitrião só pode liberar o torneio quando todos os participantes da sala tiverem finalizado seus elencos.</p>
+                    <p><strong>4.</strong> As partidas da rodada podem acontecer ao mesmo tempo. O servidor confirma cada resultado e só libera a próxima fase quando todos os confrontos da rodada estiverem concluídos.</p>
+                </div>
+                <div id="online-room-panel" class="hidden mt-6 border-t-2 border-black pt-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <div class="text-[10px] font-sports text-gray-500">CÓDIGO PARA SEUS AMIGOS</div>
+                            <div id="online-room-code-display" class="font-sports text-3xl tracking-widest text-red-600">-----</div>
+                        </div>
+                        <button id="btn-online-copy-code" class="retro-btn bg-white py-2 px-3 font-sports text-sm">COPIAR CÓDIGO</button>
+                    </div>
+                    <div id="online-room-summary" class="text-xs text-gray-600 mt-2">Aguardando participantes…</div>
+                    <div id="online-room-players" class="space-y-2 mt-3"></div>
+                    <button id="btn-online-enter-setup" class="retro-btn retro-btn-red w-full py-3 mt-4 font-sports">COMEÇAR MONTAGEM DO ELENCO</button>
+                    <button id="btn-online-leave-room" class="retro-btn bg-white w-full py-2 mt-2 font-sports text-sm">SAIR DA SALA</button>
+                </div>
+            </div>
+        </section>
+
         
         <!-- STEP 1: FORMATION AND GAME MODE SELECTION -->
-        <section id="screen-setup" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <section id="screen-setup" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
             <!-- Left Panel: Controls -->
             <div class="lg:col-span-4 flex flex-col space-y-5">
                 <!-- Formations -->
@@ -568,6 +610,22 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ONLINE ROUND BARRIER / WAITING SCREEN -->
+        <section id="screen-online-waiting" class="hidden flex flex-col space-y-5">
+            <div class="retro-card p-6 bg-yellow-50 border-2 border-black">
+                <div class="text-[10px] font-sports text-red-600 tracking-widest mb-2">GINCANA 4x0 • SINCRONIZAÇÃO ONLINE</div>
+                <h2 id="online-waiting-title" class="font-sports text-3xl text-gray-900 mb-2">AGUARDANDO A SALA</h2>
+                <p id="online-waiting-text" class="text-sm text-gray-700">O servidor está sincronizando a sala.</p>
+                <div class="mt-5 border-t border-gray-300 pt-4">
+                    <div class="font-sports text-sm mb-2">PARTICIPANTES E ELENCOS</div>
+                    <div id="online-waiting-players" class="space-y-2"></div>
+                    <button id="btn-online-launch-tournament" class="hidden retro-btn retro-btn-red w-full py-3 mt-5 font-sports text-lg">TODOS PRONTOS — LANÇAR CAMPEONATO</button>
+                    <button id="btn-online-back-to-lobby" class="retro-btn bg-white w-full py-2 mt-3 font-sports text-sm">VOLTAR À SALA</button>
                 </div>
             </div>
         </section>
@@ -2981,6 +3039,8 @@
             showScreen('screen-setup');
         }
     </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/online.js"></script>
 </body>
 </html>
 Experimente o Plus gratuitamente

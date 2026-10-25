@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: gincana-4x0
+    runtime: node
+    plan: free
+    region: ohio
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: gincana-4x0-state
+          property: connectionString
+
+  - type: keyvalue
+    name: gincana-4x0-state
+    plan: free
+    region: ohio
+    ipAllowList: []
+    maxmemoryPolicy: noeviction
+    persistenceMode: journal-snapshot
