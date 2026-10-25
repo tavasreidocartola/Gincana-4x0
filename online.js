@@ -10,6 +10,7 @@
   const originalFinalize = window.finalizeFullTimeMatch;
   const originalProceed = window.proceedAfterMatch;
   const originalSummary = window.showTournamentSummary;
+  const originalSelectMode = window.selectMode;
   const stages = ['oitavas', 'quartas', 'semi', 'final'];
   const byId = (id) => document.getElementById(id);
   const clone = (v) => JSON.parse(JSON.stringify(v));
@@ -34,8 +35,68 @@
     if (byId('online-waiting-title')) byId('online-waiting-title').textContent = title;
     if (byId('online-waiting-text')) byId('online-waiting-text').textContent = message;
     if (online.room) renderPlayerRows(byId('online-waiting-players'), online.room);
+    renderStageReadyButton();
     window.showScreen('screen-online-waiting');
   }
+  function applyRoomMode(mode) {
+    const roomMode = mode === 'blind' ? 'blind' : 'classic';
+    if (typeof originalSelectMode === 'function') originalSelectMode(roomMode);
+    if (typeof gameState !== 'undefined') gameState.selectedMode = roomMode;
+    ['btn-mode-classic', 'btn-mode-blind'].forEach((id) => {
+      const button = byId(id);
+      if (button) {
+        button.disabled = Boolean(online.enabled && online.room);
+        button.classList.toggle('opacity-50', button.disabled);
+        button.classList.toggle('cursor-not-allowed', button.disabled);
+      }
+    });
+  }
+  function renderRoomModeControls(state) {
+    const mode = state.mode === 'blind' ? 'blind' : 'classic';
+    const canEdit = online.enabled && online.id === state.hostId && ['lobby', 'drafting'].includes(state.phase);
+    const classic = byId('btn-room-mode-classic');
+    const blind = byId('btn-room-mode-blind');
+    [[classic, 'classic'], [blind, 'blind']].forEach(([button, value]) => {
+      if (!button) return;
+      button.disabled = !canEdit || mode === value;
+      button.classList.toggle('bg-black', mode === value);
+      button.classList.toggle('text-white', mode === value);
+      button.classList.toggle('bg-white', mode !== value);
+      button.classList.toggle('text-gray-900', mode !== value);
+      button.classList.toggle('opacity-50', !canEdit);
+    });
+    const description = byId('online-room-mode-description');
+    if (description) {
+      description.textContent = mode === 'blind'
+        ? 'Modo da sala: ÀS CEGAS — todos jogam com os overalls ocultos.'
+        : 'Modo da sala: CLÁSSICO — todos veem os overalls.';
+    }
+  }
+  function renderStageReadyButton() {
+    const button = byId('btn-online-confirm-stage');
+    if (!button) return;
+    const tournament = online.tournament;
+    const matches = tournament && tournament.stages && tournament.stages[tournament.stage] || [];
+    const ownMatch = matches.find((match) =>
+      (match.teamA && match.teamA.id === online.id) || (match.teamB && match.teamB.id === online.id)
+    );
+    const required = Boolean(tournament && tournament.phase === 'playing' && ownMatch && ownMatch.played);
+    const ready = Boolean(tournament && (tournament.readyPlayers || []).includes(online.id));
+    button.classList.toggle('hidden', !required);
+    button.disabled = !required || ready;
+    button.classList.toggle('opacity-50', button.disabled);
+    if (!required) return;
+    button.textContent = ready
+      ? '✓ CONFIRMADO — AGUARDANDO OS OUTROS'
+      : 'CONFIRMAR E AGUARDAR OS OUTROS (' + (tournament.readyCount || 0) + '/' + (tournament.requiredReadyCount || 0) + ')';
+  }
+  window.selectMode = function (mode) {
+    if (online.enabled && online.room) {
+      applyRoomMode(online.room.mode);
+      return;
+    }
+    if (typeof originalSelectMode === 'function') return originalSelectMode(mode);
+  };
   function emit(event, payload, callback) {
     const socket = window.gincanaSocket;
     if (!socket || !socket.connected) {
@@ -74,6 +135,8 @@
   function renderRoom(state) {
     online.room = state;
     online.hostId = state.hostId;
+    applyRoomMode(state.mode);
+    renderRoomModeControls(state);
     const panel = byId('online-room-panel');
     if (panel) panel.classList.remove('hidden');
     if (byId('online-room-code-display')) byId('online-room-code-display').textContent = state.code;
@@ -224,8 +287,9 @@
   }
   function handleTournament(data) {
     online.tournament = data;
+    if (data.roomMode) applyRoomMode(data.roomMode);
     const own = (data.participants || []).find((p) => p.id === online.id);
-    if (own) restoreRoster({ teamName: own.teamName, squad: own.squad, captainPlayerId: own.captainPlayerId, formationKey: own.formationKey, mode: own.mode });
+    if (own) restoreRoster({ teamName: own.teamName, squad: own.squad, captainPlayerId: own.captainPlayerId, formationKey: own.formationKey, mode: data.roomMode || own.mode });
     rebuildStats(data);
     stages.forEach((stage) => {
       gameState.bracket[stage] = (data.stages && data.stages[stage] || []).map(mapMatch);
@@ -270,7 +334,8 @@
   }
   function rosterPayload() {
     return {
-      formationKey: gameState.selectedFormationKey, mode: gameState.selectedMode,
+      formationKey: gameState.selectedFormationKey,
+      mode: online.room && online.room.mode ? online.room.mode : gameState.selectedMode,
       teamName: gameState.currentDrawnRoom || 'Turma sorteada', captainPlayerId: gameState.captainPlayerId,
       squad: gameState.userSquad.map((entry) => ({
         slotId: entry.slotId,
@@ -290,15 +355,23 @@
   window.confirmCaptainAndStart = function () {
     if (!online.enabled || !online.code) return originalConfirm();
     if (!gameState.captainPlayerId || gameState.userSquad.length !== 7) return;
+    const button = byId('btn-confirm-captain');
+    const errorBox = byId('captain-save-error');
+    if (errorBox) { errorBox.textContent = ''; errorBox.classList.add('hidden'); }
+    if (button) { button.disabled = true; button.textContent = 'SALVANDO ELENCO...'; }
     waiting('ENVIANDO ELENCO', 'Salvando seu time. O campeonato fica bloqueado até todos terminarem a montagem.');
     emit('room:submitRoster', { roster: rosterPayload() }, (res) => {
       if (!res || !res.ok) {
-        setStatus(res && res.error ? res.error : 'Não foi possível enviar o elenco.', true);
+        const message = res && res.error ? res.error : 'Não foi possível enviar o elenco.';
+        setStatus(message, true);
+        if (errorBox) { errorBox.textContent = message; errorBox.classList.remove('hidden'); }
+        if (button) { button.disabled = false; button.textContent = 'TENTAR CONFIRMAR NOVAMENTE'; }
         window.showScreen('screen-captain');
         return;
       }
       restoreRoster(res.roster);
-      waiting('ELENCO FINALIZADO', 'Seu time está salvo. Aguarde todos terminarem; só então o anfitrião poderá liberar as oitavas.');
+      if (button) button.textContent = 'ELENCO ENVIADO ✓';
+      waiting('ELENCO FINALIZADO', 'Seu time foi confirmado e ficou salvo. Aguarde os outros terminarem; só então o anfitrião poderá liberar as oitavas.');
     });
   };
   window.prepareAndLaunchMatch = function () {
@@ -339,7 +412,7 @@
     if (!match || !match.onlineMatchId) return originalProceed();
     if (!match.onlineIsController) {
       if (online.tournament.phase === 'finished') return showOnlineSummary(online.tournament);
-      waiting('AGUARDANDO RESULTADO OFICIAL', 'Você terminou a simulação. O responsável vai confirmar o placar oficial; a rodada só avança quando todos os confrontos terminarem.');
+      waiting('AGUARDANDO RESULTADO OFICIAL', 'O responsável pelo confronto enviará o resultado oficial. Depois que o placar aparecer como confirmado, clique em “Confirmar e aguardar os outros” para liberar a próxima fase.');
       return;
     }
     if (!match.played) { waiting('PARTIDA NÃO FINALIZADA', 'Finalize a simulação antes de enviar o resultado ao servidor.'); return; }
@@ -355,8 +428,9 @@
     emit('match:submit', payload, (res) => {
       if (!res || !res.ok) {
         match._onlineControllerCommitted = false;
-        setStatus(res && res.error ? res.error : 'Não foi possível confirmar o resultado.', true);
-        waiting('RESULTADO PENDENTE', 'Tente confirmar novamente. A rodada não avança até o servidor aceitar o resultado.');
+        const message = res && res.error ? res.error : 'Não foi possível confirmar o resultado.';
+        setStatus(message, true);
+        waiting('RESULTADO PENDENTE', message + ' Tente confirmar novamente.');
       }
     });
   };
@@ -364,6 +438,43 @@
   function setupHandlers() {
     const nameInput = byId('online-player-name');
     if (nameInput && online.name) nameInput.value = online.name;
+    const roomModeClassic = byId('btn-room-mode-classic');
+    if (roomModeClassic) roomModeClassic.addEventListener('click', () => {
+      emit('room:setMode', { mode: 'classic' }, (res) => {
+        if (!res || !res.ok) return setStatus(res && res.error ? res.error : 'Não foi possível alterar o modo.', true);
+        renderRoom(res.state);
+        setStatus('Modo da sala definido: OVR visível para todos.');
+      });
+    });
+    const roomModeBlind = byId('btn-room-mode-blind');
+    if (roomModeBlind) roomModeBlind.addEventListener('click', () => {
+      emit('room:setMode', { mode: 'blind' }, (res) => {
+        if (!res || !res.ok) return setStatus(res && res.error ? res.error : 'Não foi possível alterar o modo.', true);
+        renderRoom(res.state);
+        setStatus('Modo da sala definido: OVR oculto para todos.');
+      });
+    });
+    const confirmStage = byId('btn-online-confirm-stage');
+    if (confirmStage) confirmStage.addEventListener('click', () => {
+      const tournament = online.tournament;
+      if (!tournament || !tournament.stage) return;
+      const requestedStage = tournament.stage;
+      confirmStage.disabled = true;
+      confirmStage.textContent = 'REGISTRANDO CONFIRMAÇÃO...';
+      emit('stage:confirm', { stage: requestedStage }, (res) => {
+        if (!res || !res.ok) {
+          confirmStage.disabled = false;
+          const message = res && res.error ? res.error : 'Não foi possível confirmar a próxima fase.';
+          setStatus(message, true);
+          return renderStageReadyButton();
+        }
+        if (online.tournament && online.tournament.phase === 'playing' && online.tournament.stage === requestedStage) {
+          waiting('CONFIRMAÇÃO REGISTRADA', 'Sua confirmação ficou salva. ' +
+            (res.readyCount || 0) + '/' + (res.requiredReadyCount || 0) +
+            ' participantes ativos confirmaram; a fase avança automaticamente quando todos confirmarem.');
+        }
+      });
+    });
     const create = byId('btn-online-create');
     if (create) create.addEventListener('click', () => {
       if (!window.gincanaSocket || !window.gincanaSocket.connected) return setStatus('O servidor não está conectado. Abra a versão hospedada no Render.', true);
@@ -398,6 +509,10 @@
     if (leave) leave.addEventListener('click', () => emit('room:leave', {}, (res) => {
       if (!res || !res.ok) return setStatus(res && res.error ? res.error : 'Não foi possível sair da sala.', true);
       online.enabled = false; online.code = ''; online.room = null; online.tournament = null;
+      ['btn-mode-classic', 'btn-mode-blind'].forEach((id) => {
+        const button = byId(id);
+        if (button) { button.disabled = false; button.classList.remove('opacity-50', 'cursor-not-allowed'); }
+      });
       put(STORE_ROOM, '');
       if (byId('online-room-panel')) byId('online-room-panel').classList.add('hidden');
       setStatus('Você saiu da sala. Pode criar outra ou jogar offline.');
@@ -413,7 +528,12 @@
     const offline = byId('btn-offline-mode');
     if (offline) offline.addEventListener('click', () => {
       const finish = () => {
-        online.enabled = false; online.code = ''; online.room = null; online.tournament = null; put(STORE_ROOM, '');
+        online.enabled = false; online.code = ''; online.room = null; online.tournament = null;
+        ['btn-mode-classic', 'btn-mode-blind'].forEach((id) => {
+          const button = byId(id);
+          if (button) { button.disabled = false; button.classList.remove('opacity-50', 'cursor-not-allowed'); }
+        });
+        put(STORE_ROOM, '');
         if (byId('online-room-panel')) byId('online-room-panel').classList.add('hidden');
         window.showScreen('screen-setup');
       };

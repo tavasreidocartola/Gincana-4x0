@@ -78,11 +78,18 @@ assert.ok(html.includes('src="/socket.io/socket.io.js"'), 'O cliente Socket.IO p
 assert.ok(html.includes('src="/online.js"'), 'O módulo online precisa ser carregado.');
 assert.ok(server.includes("app.get('/healthz'"), 'O servidor precisa expor o health check do Render.');
 assert.ok(server.includes("socket.on('room:startTournament'"), 'O servidor precisa controlar o início do torneio.');
+assert.ok(server.includes("socket.on('room:setMode'"), 'O anfitrião precisa configurar o modo geral da sala.');
+assert.ok(server.includes("socket.on('stage:confirm'"), 'Cada participante ativo precisa confirmar a fase.');
+assert.ok(server.includes("requiredReadyIds.every"), 'A fase só pode avançar após as confirmações necessárias.');
 assert.ok(server.includes("socket.on('match:submit'"), 'O servidor precisa receber os placares.');
 assert.ok(server.includes("matches.every((match) => match.played)"), 'Uma fase só pode avançar após todos os resultados.');
 assert.ok(server.includes('O placar não corresponde aos gols registrados na partida.'), 'O placar precisa corresponder à linha do tempo validada.');
 assert.ok(online.includes("emit('room:submitRoster'"), 'O elenco deve ser enviado ao servidor.');
 assert.ok(online.includes("emit('match:submit'"), 'O resultado deve ser confirmado pelo servidor.');
+assert.ok(online.includes("emit('stage:confirm'"), 'O cliente deve enviar a confirmação da próxima fase.');
+assert.ok(online.includes("emit('room:setMode'"), 'O cliente deve enviar o modo escolhido pelo anfitrião.');
+assert.ok(html.includes('id="btn-online-confirm-stage"'), 'A tela de espera precisa ter o botão de confirmação da fase.');
+assert.ok(html.includes('id="btn-room-mode-blind"') && html.includes('id="btn-room-mode-classic"'), 'A sala precisa oferecer os dois modos globais.');
 
 assert.equal(pkg.scripts.start, 'node server.js');
 assert.ok(pkg.dependencies.express && pkg.dependencies['socket.io'] && pkg.dependencies.redis);

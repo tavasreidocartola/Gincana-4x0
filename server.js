@@ -76,6 +76,7 @@ function publicRoomState(room) {
   const readyCount = players.filter((p) => Boolean(p.roster)).length;
   return {
     code: room.code, hostId: room.hostId, phase: room.phase,
+    mode: room.mode === 'blind' ? 'blind' : 'classic',
     currentStage: room.tournament ? room.tournament.stage : null,
     playerCount: players.length, maxPlayers: MAX_PLAYERS, readyCount,
     canStart: players.length >= 2 && readyCount === players.length && ['lobby', 'drafting'].includes(room.phase),
@@ -110,8 +111,13 @@ function publicTournamentState(room) {
       timeline: m.timeline || [], playedBy: m.playedBy || null
     }));
   });
+  const requiredReadyIds = requiredStageReadyIds(t);
+  const readyIds = requiredReadyIds.filter((id) => Boolean(t.readyPlayers && t.readyPlayers[id]));
   return {
     roomCode: room.code, phase: t.phase, stage: t.stage, stages,
+    roomMode: room.mode === 'blind' ? 'blind' : 'classic',
+    requiredReadyIds, readyPlayers: readyIds,
+    readyCount: readyIds.length, requiredReadyCount: requiredReadyIds.length,
     participants: Object.values(t.participants).map(publicParticipant),
     championId: t.championId || null,
     champion: t.championId ? publicParticipant(t.participants[t.championId]) : null
@@ -340,6 +346,17 @@ function createMatchesFromTeams(stage, teams) {
   for (let i = 0; i < teams.length; i += 2) matches.push(makeMatch(stage, matches.length, teams[i], teams[i + 1]));
   return matches;
 }
+function requiredStageReadyIds(t, stageName) {
+  const matches = (t.stages && t.stages[stageName || t.stage]) || [];
+  const ids = new Set();
+  matches.forEach((match) => {
+    [match.teamAId, match.teamBId].forEach((id) => {
+      const participant = t.participants[id];
+      if (participant && participant.isHuman) ids.add(id);
+    });
+  });
+  return [...ids];
+}
 function progressTournament(room) {
   const t = room.tournament;
   if (!t || t.phase === 'finished') return;
@@ -352,6 +369,8 @@ function progressTournament(room) {
       if (a && b && !a.isHuman && !b.isHuman && !match.played) simulateCpuMatch(room, match);
     });
     if (!matches.length || !matches.every((match) => match.played)) return;
+    const requiredReadyIds = requiredStageReadyIds(t);
+    if (!requiredReadyIds.every((id) => Boolean(t.readyPlayers && t.readyPlayers[id]))) return;
     if (t.stage === 'final') {
       t.phase = 'finished';
       t.championId = matches[0].winnerId;
@@ -361,6 +380,7 @@ function progressTournament(room) {
     const nextStage = STAGES[STAGES.indexOf(t.stage) + 1];
     const winners = matches.map((match) => t.participants[match.winnerId]);
     t.stage = nextStage;
+    t.readyPlayers = {};
     t.stages[nextStage] = createMatchesFromTeams(nextStage, winners);
   }
 }
@@ -371,7 +391,11 @@ function beginTournament(room) {
   if (players.some((p) => !p.roster)) throw new Error('Todos precisam finalizar o elenco antes do início.');
   const participants = {};
   players.map(humanParticipant).forEach((p) => { participants[p.id] = p; });
-  room.tournament = { phase: 'playing', stage: 'oitavas', stages: {}, participants, championId: null };
+  const roomMode = room.mode === 'blind' ? 'blind' : 'classic';
+  Object.values(room.players).forEach((player) => {
+    if (player.roster) player.roster.mode = roomMode;
+  });
+  room.tournament = { phase: 'playing', stage: 'oitavas', stages: {}, participants, championId: null, readyPlayers: {} };
   const usedClasses = new Set(players.map((p) => p.roster.teamName));
   addBots(room, 16 - players.length, usedClasses);
   room.tournament.stages.oitavas = createMatchesFromTeams('oitavas', shuffle(Object.values(room.tournament.participants)));
@@ -441,7 +465,7 @@ io.on('connection', (socket) => {
       if (existing) throw new Error('Você já está na sala ' + existing.code + '.');
       const code = newCode();
       const room = {
-        code, hostId: id, phase: 'lobby',
+        code, hostId: id, phase: 'lobby', mode: data && data.mode === 'blind' ? 'blind' : 'classic',
         players: {
           [id]: { id, name, socketId: socket.id, connected: true, joinOrder: 1, status: 'na sala', roster: null }
         },
@@ -506,6 +530,25 @@ io.on('connection', (socket) => {
       if (typeof ack === 'function') ack({ ok: false, error: err.message || 'Falha ao reconectar.' });
     }
   });
+  socket.on('room:setMode', async (data, ack) => {
+    try {
+      const room = rooms.get(socket.data.roomCode);
+      if (!room) throw new Error('Sala não encontrada.');
+      if (socket.data.playerId !== room.hostId) throw new Error('Somente o anfitrião pode escolher o modo da sala.');
+      if (!['lobby', 'drafting'].includes(room.phase)) throw new Error('O modo não pode ser alterado depois que o campeonato começou.');
+      const mode = data && data.mode;
+      if (mode !== 'classic' && mode !== 'blind') throw new Error('Modo inválido.');
+      room.mode = mode;
+      Object.values(room.players).forEach((player) => {
+        if (player.roster) player.roster.mode = mode;
+      });
+      broadcastRoom(room);
+      await persistRooms();
+      if (typeof ack === 'function') ack({ ok: true, state: publicRoomState(room) });
+    } catch (err) {
+      if (typeof ack === 'function') ack({ ok: false, error: err.message || 'Não foi possível alterar o modo da sala.' });
+    }
+  });
   socket.on('room:enterSetup', async (_data, ack) => {
     try {
       const room = rooms.get(socket.data.roomCode);
@@ -527,7 +570,10 @@ io.on('connection', (socket) => {
       const player = room && room.players[socket.data.playerId];
       if (!room || !player) throw new Error('Entre novamente na sala antes de enviar seu elenco.');
       if (!['lobby', 'drafting'].includes(room.phase)) throw new Error('O campeonato já começou; o elenco foi bloqueado.');
-      player.roster = normalizeRoster(player.id, data && data.roster);
+      const submittedRoster = data && data.roster && typeof data.roster === 'object'
+        ? { ...data.roster, mode: room.mode === 'blind' ? 'blind' : 'classic' }
+        : data && data.roster;
+      player.roster = normalizeRoster(player.id, submittedRoster);
       player.status = 'pronto';
       room.phase = 'drafting';
       touch(room);
@@ -597,6 +643,8 @@ io.on('connection', (socket) => {
         : (scoreA > scoreB ? match.teamAId : match.teamBId);
       match.played = true;
       match.playedBy = playerId;
+      t.readyPlayers = t.readyPlayers || {};
+      t.readyPlayers[playerId] = true;
       progressTournament(room);
       touch(room);
       await persistRooms();
@@ -604,6 +652,35 @@ io.on('connection', (socket) => {
       broadcastTournament(room);
     } catch (err) {
       if (typeof ack === 'function') ack({ ok: false, error: err.message || 'Não foi possível confirmar o resultado.' });
+    }
+  });
+  socket.on('stage:confirm', async (data, ack) => {
+    try {
+      const room = rooms.get(socket.data.roomCode);
+      const playerId = socket.data.playerId;
+      if (!room || !room.tournament || room.tournament.phase !== 'playing') {
+        throw new Error('Não existe uma fase ativa para confirmar.');
+      }
+      const t = room.tournament;
+      const requestedStage = clean(data && data.stage, 16);
+      if (requestedStage !== t.stage) throw new Error('A fase mudou enquanto você confirmava. A tela será sincronizada.');
+      const requiredReadyIds = requiredStageReadyIds(t);
+      const ownMatch = (t.stages[t.stage] || []).find((match) => match.teamAId === playerId || match.teamBId === playerId);
+      if (!requiredReadyIds.includes(playerId) || !ownMatch) throw new Error('Sua equipe não participa mais desta fase.');
+      if (!ownMatch.played) throw new Error('Aguarde o resultado oficial do seu confronto antes de confirmar.');
+      t.readyPlayers = t.readyPlayers || {};
+      t.readyPlayers[playerId] = true;
+      progressTournament(room);
+      touch(room);
+      await persistRooms();
+      if (typeof ack === 'function') ack({
+        ok: true, stage: t.stage, phase: t.phase,
+        readyCount: requiredStageReadyIds(t).filter((id) => t.readyPlayers[id]).length,
+        requiredReadyCount: requiredStageReadyIds(t).length
+      });
+      broadcastTournament(room);
+    } catch (err) {
+      if (typeof ack === 'function') ack({ ok: false, error: err.message || 'Não foi possível confirmar a fase.' });
     }
   });
   socket.on('room:leave', async (_data, ack) => {
@@ -655,7 +732,15 @@ async function start() {
         saved.forEach((room) => {
           if (!room || !room.code || !room.players) return;
           if (Date.now() - Number(room.updatedAt || room.createdAt || Date.now()) > 7 * 24 * 60 * 60 * 1000) return;
+          room.mode = room.mode === 'blind' ? 'blind' : 'classic';
           Object.values(room.players).forEach((p) => { p.socketId = null; p.connected = false; });
+          if (room.tournament) {
+            room.tournament.readyPlayers = room.tournament.readyPlayers || {};
+            const currentMatches = room.tournament.stages && room.tournament.stages[room.tournament.stage] || [];
+            currentMatches.forEach((match) => {
+              if (match.played && match.playedBy && match.playedBy !== 'server-cpu') room.tournament.readyPlayers[match.playedBy] = true;
+            });
+          }
           rooms.set(room.code, room);
         });
         console.log('[redis] ' + rooms.size + ' sala(s) restaurada(s)');
