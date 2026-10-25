@@ -87,7 +87,8 @@ assert.ok(server.includes('O placar não corresponde aos gols registrados na par
 assert.ok(online.includes("emit('room:submitRoster'"), 'O elenco deve ser enviado ao servidor.');
 assert.ok(online.includes('room: entry.player.room'), 'O cliente deve enviar a turma de origem de cada jogador.');
 assert.ok(server.includes('const sourceRoom = clean(p && p.room, 48) || teamName'), 'O servidor deve validar cada jogador pela turma de origem.');
-assert.ok(server.includes('const allRostersReady = participants.length >= 2'), 'O mata-mata deve iniciar quando todos confirmarem os elencos.');
+assert.ok(server.includes('function maybeBeginReadyRoom(room)'), 'Salas em que todos confirmaram devem iniciar automaticamente.');
+assert.ok(server.includes('maybeBeginReadyRoom(room)'), 'A verificação de elencos prontos precisa ocorrer ao confirmar, entrar e reconectar.');
 assert.ok(online.includes("emit('match:submit'"), 'O resultado deve ser confirmado pelo servidor.');
 assert.ok(online.includes("emit('stage:confirm'"), 'O cliente deve enviar a confirmação da próxima fase.');
 assert.ok(online.includes("emit('room:setMode'"), 'O cliente deve enviar o modo escolhido pelo anfitrião.');

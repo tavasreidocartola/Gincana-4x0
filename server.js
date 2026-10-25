@@ -405,6 +405,14 @@ function beginTournament(room) {
   room.phase = 'tournament';
   progressTournament(room);
 }
+function maybeBeginReadyRoom(room) {
+  if (!room || room.tournament || !['lobby', 'drafting'].includes(room.phase)) return false;
+  const participants = Object.values(room.players || {});
+  if (participants.length < 2 || participants.length > MAX_PLAYERS ||
+      participants.some((participant) => !participant.roster)) return false;
+  beginTournament(room);
+  return true;
+}
 function cleanTimeline(list, match, participants) {
   if (!Array.isArray(list)) return [];
   const teamA = participants[match.teamAId];
@@ -509,9 +517,13 @@ io.on('connection', (socket) => {
       socket.data.playerId = id;
       socket.data.roomCode = code;
       touch(room);
+      const tournamentStarted = maybeBeginReadyRoom(room);
       if (typeof ack === 'function') ack({ ok: true, state: publicRoomState(room), roster: player.roster || null });
-      broadcastRoom(room);
-      if (room.tournament) socket.emit('tournament:state', publicTournamentState(room));
+      if (tournamentStarted) broadcastTournament(room);
+      else {
+        broadcastRoom(room);
+        if (room.tournament) socket.emit('tournament:state', publicTournamentState(room));
+      }
       await persistRooms();
     } catch (err) {
       if (typeof ack === 'function') ack({ ok: false, error: err.message || 'Não foi possível entrar na sala.' });
@@ -525,9 +537,13 @@ io.on('connection', (socket) => {
       const player = room && room.players[id];
       if (!room || !player) throw new Error('Não foi possível recuperar a sala. Entre com o código novamente.');
       bindPlayer(socket, room, player);
+      const tournamentStarted = maybeBeginReadyRoom(room);
       if (typeof ack === 'function') ack({ ok: true, state: publicRoomState(room), roster: player.roster || null });
-      broadcastRoom(room);
-      if (room.tournament) socket.emit('tournament:state', publicTournamentState(room));
+      if (tournamentStarted) broadcastTournament(room);
+      else {
+        broadcastRoom(room);
+        if (room.tournament) socket.emit('tournament:state', publicTournamentState(room));
+      }
       await persistRooms();
     } catch (err) {
       if (typeof ack === 'function') ack({ ok: false, error: err.message || 'Falha ao reconectar.' });
@@ -580,17 +596,10 @@ io.on('connection', (socket) => {
       player.status = 'pronto';
       room.phase = 'drafting';
       touch(room);
-      const participants = Object.values(room.players);
-      const allRostersReady = participants.length >= 2 && participants.length <= MAX_PLAYERS &&
-        participants.every((participant) => Boolean(participant.roster));
-      if (allRostersReady && !room.tournament) {
-        beginTournament(room);
-        if (typeof ack === 'function') ack({ ok: true, roster: player.roster, tournamentStarted: true });
-        broadcastTournament(room);
-      } else {
-        if (typeof ack === 'function') ack({ ok: true, roster: player.roster, tournamentStarted: false });
-        broadcastRoom(room);
-      }
+      const tournamentStarted = maybeBeginReadyRoom(room);
+      if (typeof ack === 'function') ack({ ok: true, roster: player.roster, tournamentStarted });
+      if (tournamentStarted) broadcastTournament(room);
+      else broadcastRoom(room);
       await persistRooms();
     } catch (err) {
       if (typeof ack === 'function') ack({ ok: false, error: err.message || 'Não foi possível salvar o elenco.' });
