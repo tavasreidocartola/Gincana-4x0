@@ -4,6 +4,7 @@ const path = require('path');
 const express = require('express');
 const { Server } = require('socket.io');
 const { createClient } = require('redis');
+const TEAM_DATABASE = require('./team-data.json');
 
 const PORT = Number(process.env.PORT || 10000);
 const STATE_KEY = 'gincana-4x0:rooms:v1';
@@ -145,26 +146,62 @@ function normalizeRoster(playerId, raw) {
   if (!raw || typeof raw !== 'object') throw new Error('Elenco inválido.');
   const input = Array.isArray(raw.squad) ? raw.squad.slice(0, 7) : [];
   if (input.length !== 7) throw new Error('O elenco precisa ter exatamente 7 jogadores.');
+
+  const teamName = clean(raw.teamName, 48) || '';
+  const sourcePlayers = TEAM_DATABASE[teamName];
+  if (!sourcePlayers) throw new Error('A turma selecionada não existe na base oficial.');
+
+  const expectedPositionsByFormation = {
+    '1-2-3-1': { GOL: 1, ZAG: 2, ALA: 2, MEI: 1, ATA: 1 },
+    '1-1-2-3': { GOL: 1, ZAG: 1, ALA: 2, MEI: 2, ATA: 1 },
+    '1-3-2-1': { GOL: 1, ZAG: 3, ALA: 0, MEI: 2, ATA: 1 }
+  };
+  const formationKey = clean(raw.formationKey, 16) || '1-2-3-1';
+  const expected = expectedPositionsByFormation[formationKey];
+  if (!expected) throw new Error('Formação inválida.');
+
   const names = new Set();
-  const teamName = clean(raw.teamName, 48) || 'Turma sorteada';
   const squad = input.map((entry, index) => {
     const p = entry && entry.player ? entry.player : entry;
     const name = clean(p && p.name, 32);
     const position = clean(p && p.position, 8);
     if (!name) throw new Error('Há jogador sem nome.');
     if (!['GOL', 'ZAG', 'ALA', 'MEI', 'ATA'].includes(position)) throw new Error('Há posição inválida.');
+
     const normalized = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR');
     if (names.has(normalized)) throw new Error('O elenco não pode ter jogadores repetidos.');
     names.add(normalized);
+
+    // The selected player must exist in the server-held roster for the drawn class/year.
+    const official = sourcePlayers.find((candidate) => {
+      const officialName = String(candidate.name || '').normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR');
+      return officialName === normalized && candidate.position === position;
+    });
+    if (!official) throw new Error('Um jogador não pertence à turma sorteada.');
     return {
       slotId: clean(entry && entry.slotId, 24) || ('slot_' + (index + 1)),
       captain: false,
-      player: { id: playerId + ':p' + (index + 1), name, position, overall: int(p && p.overall, 40, 99, 70), room: teamName }
+      player: {
+        id: playerId + ':p' + (index + 1),
+        name: official.name,
+        position: official.position,
+        overall: int(official.overall, 40, 99, 70),
+        room: teamName
+      }
     };
   });
-  if (squad.filter((entry) => entry.player.position === 'GOL').length !== 1) {
-    throw new Error('O elenco precisa ter exatamente um goleiro.');
+
+  const actualPositions = squad.reduce((counts, entry) => {
+    counts[entry.player.position] = (counts[entry.player.position] || 0) + 1;
+    return counts;
+  }, {});
+  for (const position of ['GOL', 'ZAG', 'ALA', 'MEI', 'ATA']) {
+    if ((actualPositions[position] || 0) !== expected[position]) {
+      throw new Error('As posições escolhidas não correspondem à formação selecionada.');
+    }
   }
+
   const requestedCaptain = clean(raw.captainPlayerId, 100);
   let captainIndex = input.findIndex((entry) => {
     const p = entry && entry.player ? entry.player : entry;
@@ -172,10 +209,13 @@ function normalizeRoster(playerId, raw) {
   });
   if (captainIndex < 0) captainIndex = 0;
   squad[captainIndex].captain = true;
+
   return {
-    formationKey: clean(raw.formationKey, 16) || '1-2-3-1',
+    formationKey,
     mode: raw.mode === 'blind' ? 'blind' : 'classic',
-    teamName, squad, captainPlayerId: squad[captainIndex].player.id,
+    teamName,
+    squad,
+    captainPlayerId: squad[captainIndex].player.id,
     ovr: Math.round(squad.reduce((sum, entry) => sum + entry.player.overall, 0) / 7)
   };
 }
@@ -189,7 +229,7 @@ function humanParticipant(player) {
   };
 }
 function addBots(room, count, usedClasses) {
-  const pool = room.teamPool || {};
+  const pool = TEAM_DATABASE;
   const keys = shuffle(Object.keys(pool).filter((key) => (pool[key] || []).length));
   let serial = 1;
   for (let i = 0; i < count; i++) {
@@ -205,12 +245,21 @@ function addBots(room, count, usedClasses) {
       { name: 'Atacante', position: 'ATA', overall: 70 }
     ];
     const id = 'bot-' + room.code + '-' + serial++;
-    const squad = source.slice(0, 7).map((p, index) => ({
+    const remaining = [...source];
+    const requiredPositions = ['GOL', 'ZAG', 'ZAG', 'ALA', 'ALA', 'MEI', 'ATA'];
+    const selectedPlayers = requiredPositions.map((position, index) => {
+      const foundIndex = remaining.findIndex((p) => p.position === position);
+      if (foundIndex >= 0) return remaining.splice(foundIndex, 1)[0];
+      return { name: position + ' reserva ' + (index + 1), position, overall: 70 };
+    });
+    const squad = selectedPlayers.map((p, index) => ({
       slotId: 'bot_slot_' + (index + 1), captain: index === 0,
       player: {
-        id: id + ':p' + (index + 1), name: clean(p.name, 32) || ('Jogador ' + (index + 1)),
-        position: ['GOL', 'ZAG', 'ALA', 'MEI', 'ATA'].includes(clean(p.position, 8)) ? clean(p.position, 8) : 'MEI',
-        overall: int(p.overall, 40, 99, 70), room: key
+        id: id + ':p' + (index + 1),
+        name: clean(p.name, 32) || ('Jogador ' + (index + 1)),
+        position: p.position,
+        overall: int(p.overall, 40, 99, 70),
+        room: key
       }
     }));
     const team = {
@@ -243,20 +292,46 @@ function shootout() {
 }
 function simulateCpuMatch(room, match) {
   if (match.played) return;
-  const t = room.tournament;
-  const a = t.participants[match.teamAId];
-  const b = t.participants[match.teamBId];
-  const diff = a.ovr - b.ovr;
-  const scoreA = Math.floor(Math.random() * 3) + (diff > 5 ? 1 : 0);
-  const scoreB = Math.floor(Math.random() * 3) + (diff < -5 ? 1 : 0);
-  let pA = null;
-  let pB = null;
-  if (scoreA === scoreB) [pA, pB] = shootout();
+  const tournament = room.tournament;
+  const a = tournament.participants[match.teamAId];
+  const b = tournament.participants[match.teamBId];
+  const difference = a.ovr - b.ovr;
+  const scoreA = Math.floor(Math.random() * 3) + (difference > 5 ? 1 : 0);
+  const scoreB = Math.floor(Math.random() * 3) + (difference < -5 ? 1 : 0);
+  let penaltyA = null;
+  let penaltyB = null;
+  if (scoreA === scoreB) [penaltyA, penaltyB] = shootout();
+
+  const events = [];
+  const addGoalEvents = (team, goals) => {
+    const players = (team.squad || []).map((entry) => entry.player).filter(Boolean);
+    for (let i = 0; i < goals; i++) {
+      if (!players.length) continue;
+      const scorer = players[Math.floor(Math.random() * players.length)];
+      const possibleAssisters = players.filter((p) => p.id !== scorer.id);
+      const assister = possibleAssisters.length && Math.random() < 0.65
+        ? possibleAssisters[Math.floor(Math.random() * possibleAssisters.length)]
+        : null;
+      events.push({
+        type: 'GOAL',
+        minute: 1 + Math.floor(Math.random() * 90),
+        half: 'CPU',
+        scorer: { id: scorer.id, name: scorer.name },
+        assister: assister ? { id: assister.id, name: assister.name } : null
+      });
+    }
+  };
+  addGoalEvents(a, scoreA);
+  addGoalEvents(b, scoreB);
+
   match.scoreA = scoreA;
   match.scoreB = scoreB;
-  match.penaltyScoreA = pA;
-  match.penaltyScoreB = pB;
-  match.winnerId = scoreA === scoreB ? (pA > pB ? match.teamAId : match.teamBId) : (scoreA > scoreB ? match.teamAId : match.teamBId);
+  match.penaltyScoreA = penaltyA;
+  match.penaltyScoreB = penaltyB;
+  match.timeline = events.sort((left, right) => left.minute - right.minute);
+  match.winnerId = scoreA === scoreB
+    ? (penaltyA > penaltyB ? match.teamAId : match.teamBId)
+    : (scoreA > scoreB ? match.teamAId : match.teamBId);
   match.played = true;
   match.playedBy = 'server-cpu';
 }
@@ -419,7 +494,6 @@ io.on('connection', (socket) => {
       const player = room && room.players[socket.data.playerId];
       if (!room || !player) throw new Error('Entre novamente na sala antes de enviar seu elenco.');
       if (!['lobby', 'drafting'].includes(room.phase)) throw new Error('O campeonato já começou; o elenco foi bloqueado.');
-      if (!room.teamPool) room.teamPool = cleanTeamPool(data && data.teamPool);
       player.roster = normalizeRoster(player.id, data && data.roster);
       player.status = 'pronto';
       room.phase = 'drafting';
@@ -458,15 +532,21 @@ io.on('connection', (socket) => {
         return;
       }
       if (match.controllerId !== playerId) throw new Error('Somente o responsável escolhido pelo servidor pode confirmar o resultado.');
-      const scoreA = int(data && data.scoreA, 0, 30, -1);
-      const scoreB = int(data && data.scoreB, 0, 30, -1);
-      if (scoreA < 0 || scoreB < 0) throw new Error('Placar inválido.');
+      const scoreA = Number(data && data.scoreA);
+      const scoreB = Number(data && data.scoreB);
+      if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB) ||
+          scoreA < 0 || scoreA > 30 || scoreB < 0 || scoreB > 30) {
+        throw new Error('Placar inválido.');
+      }
       let penaltyA = null;
       let penaltyB = null;
       if (scoreA === scoreB) {
-        penaltyA = int(data && data.penaltyScoreA, 0, 20, -1);
-        penaltyB = int(data && data.penaltyScoreB, 0, 20, -1);
-        if (penaltyA < 0 || penaltyB < 0 || penaltyA === penaltyB) throw new Error('O empate precisa de pênaltis com vencedor definido.');
+        penaltyA = Number(data && data.penaltyScoreA);
+        penaltyB = Number(data && data.penaltyScoreB);
+        if (!Number.isInteger(penaltyA) || !Number.isInteger(penaltyB) ||
+            penaltyA < 0 || penaltyA > 20 || penaltyB < 0 || penaltyB > 20 || penaltyA === penaltyB) {
+          throw new Error('O empate precisa de pênaltis com vencedor definido.');
+        }
       }
       match.scoreA = scoreA;
       match.scoreB = scoreB;

@@ -1,0 +1,728 @@
+{
+  "IELEMEC2 2023": [
+    {
+      "position": "GOL",
+      "name": "Bueno",
+      "overall": 83
+    },
+    {
+      "position": "ZAG",
+      "name": "Vasconcelos",
+      "overall": 79
+    },
+    {
+      "position": "ZAG",
+      "name": "Gazin",
+      "overall": 83
+    },
+    {
+      "position": "MEI",
+      "name": "Hugão",
+      "overall": 95
+    },
+    {
+      "position": "ALA",
+      "name": "Othavyo Japa",
+      "overall": 87
+    },
+    {
+      "position": "ALA",
+      "name": "Amâncio",
+      "overall": 89
+    },
+    {
+      "position": "ATA",
+      "name": "Brian",
+      "overall": 82
+    }
+  ],
+  "IELEMEC2 2024": [
+    {
+      "position": "GOL",
+      "name": "Bueno",
+      "overall": 87
+    },
+    {
+      "position": "ZAG",
+      "name": "Vasconcelos",
+      "overall": 83
+    },
+    {
+      "position": "ZAG",
+      "name": "Gazin",
+      "overall": 84
+    },
+    {
+      "position": "MEI",
+      "name": "Hugão",
+      "overall": 93
+    },
+    {
+      "position": "ALA",
+      "name": "Othavyo Japa",
+      "overall": 89
+    },
+    {
+      "position": "ALA",
+      "name": "Amâncio",
+      "overall": 89
+    },
+    {
+      "position": "ATA",
+      "name": "Brian",
+      "overall": 81
+    }
+  ],
+  "IELEMEC2 2025": [
+    {
+      "position": "GOL",
+      "name": "Bueno",
+      "overall": 85
+    },
+    {
+      "position": "ZAG",
+      "name": "Vasconcelos",
+      "overall": 82
+    },
+    {
+      "position": "ZAG",
+      "name": "Gazin",
+      "overall": 84
+    },
+    {
+      "position": "MEI",
+      "name": "Hugão",
+      "overall": 93
+    },
+    {
+      "position": "ALA",
+      "name": "Othavyo Japa",
+      "overall": 88
+    },
+    {
+      "position": "ALA",
+      "name": "Amâncio",
+      "overall": 87
+    },
+    {
+      "position": "ATA",
+      "name": "Brian",
+      "overall": 82
+    }
+  ],
+  "IDEV2 2023": [
+    {
+      "position": "GOL",
+      "name": "Henry",
+      "overall": 79
+    },
+    {
+      "position": "ZAG",
+      "name": "Lipe",
+      "overall": 92
+    },
+    {
+      "position": "ZAG",
+      "name": "Felipe",
+      "overall": 86
+    },
+    {
+      "position": "ALA",
+      "name": "Japonês",
+      "overall": 80
+    },
+    {
+      "position": "ALA",
+      "name": "Letzel",
+      "overall": 83
+    },
+    {
+      "position": "MEI",
+      "name": "Pedrão",
+      "overall": 94
+    },
+    {
+      "position": "ATA",
+      "name": "Kauan",
+      "overall": 81
+    }
+  ],
+  "IDEV2 2024": [
+    {
+      "position": "GOL",
+      "name": "Henry",
+      "overall": 80
+    },
+    {
+      "position": "ZAG",
+      "name": "Lipe",
+      "overall": 90
+    },
+    {
+      "position": "ZAG",
+      "name": "Felipe",
+      "overall": 84
+    },
+    {
+      "position": "ALA",
+      "name": "Japonês",
+      "overall": 82
+    },
+    {
+      "position": "ALA",
+      "name": "Letzel",
+      "overall": 84
+    },
+    {
+      "position": "MEI",
+      "name": "Pedrão",
+      "overall": 93
+    },
+    {
+      "position": "ATA",
+      "name": "Kauan",
+      "overall": 80
+    }
+  ],
+  "IDEV2 2025": [
+    {
+      "position": "GOL",
+      "name": "Henry",
+      "overall": 82
+    },
+    {
+      "position": "ZAG",
+      "name": "Lipe",
+      "overall": 91
+    },
+    {
+      "position": "ZAG",
+      "name": "Felipe",
+      "overall": 84
+    },
+    {
+      "position": "ALA",
+      "name": "Japonês",
+      "overall": 80
+    },
+    {
+      "position": "ALA",
+      "name": "Letzel",
+      "overall": 86
+    },
+    {
+      "position": "MEI",
+      "name": "Pedrão",
+      "overall": 95
+    },
+    {
+      "position": "ATA",
+      "name": "Kauan",
+      "overall": 80
+    }
+  ],
+  "IELEMEC3 2024": [
+    {
+      "position": "GOL",
+      "name": "Antony",
+      "overall": 82
+    },
+    {
+      "position": "ZAG",
+      "name": "Nilson",
+      "overall": 77
+    },
+    {
+      "position": "ZAG",
+      "name": "Diogo",
+      "overall": 81
+    },
+    {
+      "position": "MEI",
+      "name": "Igor",
+      "overall": 82
+    },
+    {
+      "position": "ALA",
+      "name": "Enzão",
+      "overall": 90
+    },
+    {
+      "position": "ALA",
+      "name": "Enzo preto",
+      "overall": 82
+    },
+    {
+      "position": "ATA",
+      "name": "Breno",
+      "overall": 78
+    }
+  ],
+  "IELEMEC3 2025": [
+    {
+      "position": "GOL",
+      "name": "Antony",
+      "overall": 81
+    },
+    {
+      "position": "ZAG",
+      "name": "Nilson",
+      "overall": 77
+    },
+    {
+      "position": "ZAG",
+      "name": "Diogo",
+      "overall": 80
+    },
+    {
+      "position": "MEI",
+      "name": "Igor",
+      "overall": 81
+    },
+    {
+      "position": "ALA",
+      "name": "Enzão",
+      "overall": 88
+    },
+    {
+      "position": "ALA",
+      "name": "Enzo preto",
+      "overall": 82
+    },
+    {
+      "position": "ATA",
+      "name": "Breno",
+      "overall": 81
+    }
+  ],
+  "IELEMEC3 2026": [
+    {
+      "position": "GOL",
+      "name": "Antony",
+      "overall": 83
+    },
+    {
+      "position": "ZAG",
+      "name": "Nilson",
+      "overall": 79
+    },
+    {
+      "position": "ZAG",
+      "name": "Diogo",
+      "overall": 81
+    },
+    {
+      "position": "MEI",
+      "name": "Igor",
+      "overall": 80
+    },
+    {
+      "position": "ALA",
+      "name": "Enzão",
+      "overall": 91
+    },
+    {
+      "position": "ALA",
+      "name": "Enzo preto",
+      "overall": 82
+    },
+    {
+      "position": "ATA",
+      "name": "Breno",
+      "overall": 81
+    }
+  ],
+  "IDEV3 2024": [
+    {
+      "position": "GOL",
+      "name": "Kashima",
+      "overall": 78
+    },
+    {
+      "position": "ZAG",
+      "name": "Manuzão",
+      "overall": 79
+    },
+    {
+      "position": "ZAG",
+      "name": "Lucas",
+      "overall": 81
+    },
+    {
+      "position": "ALA",
+      "name": "Azeitona",
+      "overall": 80
+    },
+    {
+      "position": "ALA",
+      "name": "Baiano",
+      "overall": 81
+    },
+    {
+      "position": "MEI",
+      "name": "Marks",
+      "overall": 87
+    },
+    {
+      "position": "ATA",
+      "name": "Loko",
+      "overall": 80
+    }
+  ],
+  "IDEV3 2025": [
+    {
+      "position": "GOL",
+      "name": "Kashima",
+      "overall": 80
+    },
+    {
+      "position": "ZAG",
+      "name": "Manuzão",
+      "overall": 79
+    },
+    {
+      "position": "ZAG",
+      "name": "Lucas",
+      "overall": 83
+    },
+    {
+      "position": "ALA",
+      "name": "Azeitona",
+      "overall": 82
+    },
+    {
+      "position": "ALA",
+      "name": "Baiano",
+      "overall": 82
+    },
+    {
+      "position": "MEI",
+      "name": "Marks",
+      "overall": 88
+    },
+    {
+      "position": "ATA",
+      "name": "Loko",
+      "overall": 80
+    }
+  ],
+  "IDEV3 2026": [
+    {
+      "position": "GOL",
+      "name": "Kashima",
+      "overall": 80
+    },
+    {
+      "position": "ZAG",
+      "name": "Manuzão",
+      "overall": 80
+    },
+    {
+      "position": "ZAG",
+      "name": "Lucas",
+      "overall": 83
+    },
+    {
+      "position": "ALA",
+      "name": "Azeitona",
+      "overall": 82
+    },
+    {
+      "position": "ALA",
+      "name": "Baiano",
+      "overall": 83
+    },
+    {
+      "position": "MEI",
+      "name": "Marks",
+      "overall": 89
+    },
+    {
+      "position": "ATA",
+      "name": "Loko",
+      "overall": 80
+    }
+  ],
+  "IELEMEC4 2025": [
+    {
+      "position": "GOL",
+      "name": "Vitin",
+      "overall": 85
+    },
+    {
+      "position": "ZAG",
+      "name": "Thiago",
+      "overall": 85
+    },
+    {
+      "position": "ZAG",
+      "name": "Giovanne",
+      "overall": 89
+    },
+    {
+      "position": "ZAG",
+      "name": "Tavares",
+      "overall": 89
+    },
+    {
+      "position": "ZAG",
+      "name": "Murilo",
+      "overall": 89
+    },
+    {
+      "position": "ALA",
+      "name": "Enzo",
+      "overall": 89
+    },
+    {
+      "position": "ALA",
+      "name": "Negro",
+      "overall": 86
+    },
+    {
+      "position": "ALA",
+      "name": "Kevin",
+      "overall": 85
+    },
+    {
+      "position": "ALA",
+      "name": "Pisin",
+      "overall": 85
+    },
+    {
+      "position": "ALA",
+      "name": "Lê",
+      "overall": 92
+    },
+    {
+      "position": "MEI",
+      "name": "Isaac",
+      "overall": 79
+    },
+    {
+      "position": "MEI",
+      "name": "Vini",
+      "overall": 89
+    },
+    {
+      "position": "ATA",
+      "name": "João",
+      "overall": 89
+    }
+  ],
+  "IELEMEC4 2026": [
+    {
+      "position": "GOL",
+      "name": "Vitin",
+      "overall": 89
+    },
+    {
+      "position": "ZAG",
+      "name": "Thiago",
+      "overall": 91
+    },
+    {
+      "position": "ZAG",
+      "name": "Giovanne",
+      "overall": 92
+    },
+    {
+      "position": "ZAG",
+      "name": "Tavares",
+      "overall": 93
+    },
+    {
+      "position": "ZAG",
+      "name": "Murilo",
+      "overall": 92
+    },
+    {
+      "position": "ALA",
+      "name": "Luiz Renato",
+      "overall": 89
+    },
+    {
+      "position": "ALA",
+      "name": "Enzo",
+      "overall": 92
+    },
+    {
+      "position": "ALA",
+      "name": "Negro",
+      "overall": 88
+    },
+    {
+      "position": "ALA",
+      "name": "Kevin",
+      "overall": 87
+    },
+    {
+      "position": "ALA",
+      "name": "Pisin",
+      "overall": 86
+    },
+    {
+      "position": "MEI",
+      "name": "Isaac",
+      "overall": 80
+    },
+    {
+      "position": "MEI",
+      "name": "Vini",
+      "overall": 92
+    },
+    {
+      "position": "ATA",
+      "name": "João",
+      "overall": 91
+    }
+  ],
+  "IDEV4 2025": [
+    {
+      "position": "GOL",
+      "name": "Malcom",
+      "overall": 81
+    },
+    {
+      "position": "ZAG",
+      "name": "Hugão",
+      "overall": 83
+    },
+    {
+      "position": "ZAG",
+      "name": "Luis gustavo",
+      "overall": 82
+    },
+    {
+      "position": "ALA",
+      "name": "Isaque",
+      "overall": 84
+    },
+    {
+      "position": "ALA",
+      "name": "Garcia",
+      "overall": 82
+    },
+    {
+      "position": "MEI",
+      "name": "Jãozin",
+      "overall": 88
+    },
+    {
+      "position": "ATA",
+      "name": "David",
+      "overall": 80
+    }
+  ],
+  "IDEV4 2026": [
+    {
+      "position": "GOL",
+      "name": "Malcom",
+      "overall": 82
+    },
+    {
+      "position": "ZAG",
+      "name": "Biro",
+      "overall": 83
+    },
+    {
+      "position": "ZAG",
+      "name": "Luis gustavo",
+      "overall": 84
+    },
+    {
+      "position": "ALA",
+      "name": "Isaque",
+      "overall": 84
+    },
+    {
+      "position": "ALA",
+      "name": "Garcia",
+      "overall": 83
+    },
+    {
+      "position": "MEI",
+      "name": "Jãozin",
+      "overall": 90
+    },
+    {
+      "position": "ATA",
+      "name": "David",
+      "overall": 81
+    }
+  ],
+  "IDEV5 2026": [
+    {
+      "position": "GOL",
+      "name": "Cardoso",
+      "overall": 81
+    },
+    {
+      "position": "ZAG",
+      "name": "Elias",
+      "overall": 78
+    },
+    {
+      "position": "ZAG",
+      "name": "Miguel Leandro",
+      "overall": 80
+    },
+    {
+      "position": "ALA",
+      "name": "Otávio",
+      "overall": 83
+    },
+    {
+      "position": "ALA",
+      "name": "Samuel",
+      "overall": 82
+    },
+    {
+      "position": "MEI",
+      "name": "Daniel",
+      "overall": 88
+    },
+    {
+      "position": "ATA",
+      "name": "Pedro",
+      "overall": 82
+    }
+  ],
+  "IELEMEC5 2026": [
+    {
+      "position": "GOL",
+      "name": "Enzo",
+      "overall": 83
+    },
+    {
+      "position": "ZAG",
+      "name": "Amaral",
+      "overall": 90
+    },
+    {
+      "position": "ZAG",
+      "name": "Eliézer",
+      "overall": 80
+    },
+    {
+      "position": "ALA",
+      "name": "Lucas",
+      "overall": 81
+    },
+    {
+      "position": "ALA",
+      "name": "Echaporã",
+      "overall": 84
+    },
+    {
+      "position": "MEI",
+      "name": "Saulo",
+      "overall": 89
+    },
+    {
+      "position": "ATA",
+      "name": "Filipe",
+      "overall": 82
+    }
+  ]
+}

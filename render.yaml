@@ -22,4 +22,4 @@ services:
     region: ohio
     ipAllowList: []
     maxmemoryPolicy: noeviction
-    persistenceMode: journal-snapshot
+    persistenceMode: off

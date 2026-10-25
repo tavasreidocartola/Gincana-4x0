@@ -235,7 +235,10 @@
     const current = data.stages && data.stages[data.stage] || [];
     const ownCurrent = current.find((m) => (m.teamA && m.teamA.id === online.id) || (m.teamB && m.teamB.id === online.id));
     const matchVisible = byId('screen-match-play') && !byId('screen-match-play').classList.contains('hidden');
-    if (matchVisible && gameState.activeMatch && !gameState.activeMatch._onlineControllerCommitted) return;
+    const activeServerMatch = gameState.activeMatch && gameState.activeMatch.onlineMatchId
+      ? Object.values(data.stages || {}).flat().find((match) => match.id === gameState.activeMatch.onlineMatchId)
+      : null;
+    if (matchVisible && activeServerMatch && !activeServerMatch.played) return;
     renderBracketView();
     if (data.phase === 'finished') { showOnlineSummary(data); return; }
     if (ownCurrent && !ownCurrent.played) {
@@ -288,7 +291,7 @@
     if (!online.enabled || !online.code) return originalConfirm();
     if (!gameState.captainPlayerId || gameState.userSquad.length !== 7) return;
     waiting('ENVIANDO ELENCO', 'Salvando seu time. O campeonato fica bloqueado até todos terminarem a montagem.');
-    emit('room:submitRoster', { roster: rosterPayload(), teamPool: makeTeamPool() }, (res) => {
+    emit('room:submitRoster', { roster: rosterPayload() }, (res) => {
       if (!res || !res.ok) {
         setStatus(res && res.error ? res.error : 'Não foi possível enviar o elenco.', true);
         window.showScreen('screen-captain');
@@ -303,12 +306,19 @@
     const match = (gameState.bracket[gameState.currentBracketStage] || []).find((item) => item.onlineIsMyMatch && !item.played);
     if (!match) { waiting('AGUARDANDO PARTIDAS', 'Você não tem uma partida pendente nesta rodada.'); return; }
     online.currentMatchId = match.onlineMatchId;
+    if (!match.onlineIsController) {
+      const controller = (online.tournament.participants || []).find((player) => player.id === match.onlineControllerId);
+      waiting(
+        'AGUARDANDO O CONFRONTO COMPARTILHADO',
+        'Esta partida tem um único placar oficial para os dois times. ' +
+          (controller ? controller.name : 'O responsável pela partida') +
+          ' foi escolhido pelo servidor para executar a simulação; assim que terminar, o resultado será sincronizado para a sala.'
+      );
+      return;
+    }
     gameState.activeMatch = match;
     setupUserMatchPreCalculations(match);
     initMatchSimulationUI(match);
-    if (!match.onlineIsController && byId('match-view-phase')) {
-      byId('match-view-phase').textContent = 'PARTIDA SINCRONIZADA • RESULTADO OFICIAL CONFIRMADO PELO RESPONSÁVEL';
-    }
   };
   window.finalizeFullTimeMatch = function () {
     if (!online.enabled || !online.tournament || !gameState.activeMatch) return originalFinalize();
