@@ -203,11 +203,11 @@ function normalizeRoster(playerId, raw) {
   }
 
   const requestedCaptain = clean(raw.captainPlayerId, 100);
-  let captainIndex = input.findIndex((entry) => {
+  const captainIndex = input.findIndex((entry) => {
     const p = entry && entry.player ? entry.player : entry;
     return String(p && p.id) === requestedCaptain;
   });
-  if (captainIndex < 0) captainIndex = 0;
+  if (captainIndex < 0) throw new Error('Selecione um capitão válido para o elenco.');
   squad[captainIndex].captain = true;
 
   return {
@@ -378,17 +378,50 @@ function beginTournament(room) {
   room.phase = 'tournament';
   progressTournament(room);
 }
-function cleanTimeline(list) {
+function cleanTimeline(list, match, participants) {
   if (!Array.isArray(list)) return [];
+  const teamA = participants[match.teamAId];
+  const teamB = participants[match.teamBId];
+  const sideByPlayerId = new Map();
+  const officialPlayers = new Map();
+  const addRoster = (participant, side) => {
+    (participant && participant.squad || []).forEach((entry) => {
+      const player = entry && entry.player;
+      if (!player || !player.id) return;
+      sideByPlayerId.set(String(player.id), side);
+      officialPlayers.set(String(player.id), player);
+    });
+  };
+  addRoster(teamA, 'USER');
+  addRoster(teamB, 'OPP');
+
+  const person = (raw, expectedSide) => {
+    if (!raw || typeof raw !== 'object') return null;
+    const id = clean(raw.id, 100);
+    const official = officialPlayers.get(id);
+    if (!id || !official || (expectedSide && sideByPlayerId.get(id) !== expectedSide)) return null;
+    return { id, name: official.name };
+  };
+
   return list.slice(0, 100).map((event) => {
-    const type = ['GOAL', 'GOAL_PENALTY', 'OWN_GOAL', 'SAVE', 'YELLOW_CARD', 'RED_CARD'].includes(clean(event && event.type, 20))
+    const type = ['GOAL', 'GOAL_PENALTY', 'OWN_GOAL', 'SAVE', 'YELLOW_CARD', 'RED_CARD', 'PENALTY_MISSED'].includes(clean(event && event.type, 20))
       ? clean(event.type, 20) : 'EVENT';
-    const person = (p) => p && typeof p === 'object' ? { id: clean(p.id, 100), name: clean(p.name, 32) } : null;
+    const team = event && (event.team === 'USER' || event.team === 'OPP') ? event.team : null;
+    const isGoal = type === 'GOAL' || type === 'GOAL_PENALTY';
+    const scorer = person(event && event.scorer, team || undefined);
+    const assister = type === 'GOAL' ? person(event && event.assister, team || undefined) : null;
+
+    // Invalid scoring events are removed; match:submit will reject a score that
+    // no longer matches the official goal timeline.
+    if (isGoal && (!team || !scorer)) return null;
+    const safeAssister = assister && scorer && assister.id !== scorer.id ? assister : null;
     return {
-      type, minute: int(event && event.minute, 0, 100, 0), half: clean(event && event.half, 8),
-      scorer: person(event && event.scorer), assister: type === 'GOAL' ? person(event && event.assister) : null
+      type, team, minute: int(event && event.minute, 0, 100, 0), half: clean(event && event.half, 8),
+      teamName: team === 'USER' ? (teamA && teamA.displayName) || 'Seu time'
+        : team === 'OPP' ? (teamB && teamB.displayName) || 'Adversário' : '',
+      scorer, assister: safeAssister
     };
-  });
+  }).filter(Boolean);
 }
 function bindPlayer(socket, room, player) {
   player.socketId = socket.id;
@@ -552,7 +585,13 @@ io.on('connection', (socket) => {
       match.scoreB = scoreB;
       match.penaltyScoreA = penaltyA;
       match.penaltyScoreB = penaltyB;
-      match.timeline = cleanTimeline(data && data.timeline);
+      match.timeline = cleanTimeline(data && data.timeline, match, t.participants);
+      const goalTypes = new Set(['GOAL', 'GOAL_PENALTY']);
+      const timelineScoreA = match.timeline.filter((event) => goalTypes.has(event.type) && event.team === 'USER').length;
+      const timelineScoreB = match.timeline.filter((event) => goalTypes.has(event.type) && event.team === 'OPP').length;
+      if (timelineScoreA !== scoreA || timelineScoreB !== scoreB) {
+        throw new Error('O placar não corresponde aos gols registrados na partida.');
+      }
       match.winnerId = scoreA === scoreB
         ? (penaltyA > penaltyB ? match.teamAId : match.teamBId)
         : (scoreA > scoreB ? match.teamAId : match.teamBId);
