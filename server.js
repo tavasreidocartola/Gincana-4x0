@@ -154,8 +154,7 @@ function normalizeRoster(playerId, raw) {
   if (input.length !== 7) throw new Error('O elenco precisa ter exatamente 7 jogadores.');
 
   const teamName = clean(raw.teamName, 48) || '';
-  const sourcePlayers = TEAM_DATABASE[teamName];
-  if (!sourcePlayers) throw new Error('A turma selecionada não existe na base oficial.');
+  if (!TEAM_DATABASE[teamName]) throw new Error('A turma selecionada não existe na base oficial.');
 
   const expectedPositionsByFormation = {
     '1-2-3-1': { GOL: 1, ZAG: 2, ALA: 2, MEI: 1, ATA: 1 },
@@ -178,7 +177,11 @@ function normalizeRoster(playerId, raw) {
     if (names.has(normalized)) throw new Error('O elenco não pode ter jogadores repetidos.');
     names.add(normalized);
 
-    // The selected player must exist in the server-held roster for the drawn class/year.
+    // The draft draws each player from its own class/year, so validate their
+    // submitted source room instead of assuming all seven came from teamName.
+    const sourceRoom = clean(p && p.room, 48) || teamName;
+    const sourcePlayers = TEAM_DATABASE[sourceRoom];
+    if (!sourcePlayers) throw new Error('A turma de origem de um jogador não existe na base oficial.');
     const official = sourcePlayers.find((candidate) => {
       const officialName = String(candidate.name || '').normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR');
@@ -193,7 +196,7 @@ function normalizeRoster(playerId, raw) {
         name: official.name,
         position: official.position,
         overall: int(official.overall, 40, 99, 70),
-        room: teamName
+        room: sourceRoom
       }
     };
   });

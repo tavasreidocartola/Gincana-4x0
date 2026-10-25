@@ -85,6 +85,8 @@ assert.ok(server.includes("socket.on('match:submit'"), 'O servidor precisa receb
 assert.ok(server.includes("matches.every((match) => match.played)"), 'Uma fase só pode avançar após todos os resultados.');
 assert.ok(server.includes('O placar não corresponde aos gols registrados na partida.'), 'O placar precisa corresponder à linha do tempo validada.');
 assert.ok(online.includes("emit('room:submitRoster'"), 'O elenco deve ser enviado ao servidor.');
+assert.ok(online.includes('room: entry.player.room'), 'O cliente deve enviar a turma de origem de cada jogador.');
+assert.ok(server.includes('const sourceRoom = clean(p && p.room, 48) || teamName'), 'O servidor deve validar cada jogador pela turma de origem.');
 assert.ok(online.includes("emit('match:submit'"), 'O resultado deve ser confirmado pelo servidor.');
 assert.ok(online.includes("emit('stage:confirm'"), 'O cliente deve enviar a confirmação da próxima fase.');
 assert.ok(online.includes("emit('room:setMode'"), 'O cliente deve enviar o modo escolhido pelo anfitrião.');

@@ -339,7 +339,13 @@
       teamName: gameState.currentDrawnRoom || 'Turma sorteada', captainPlayerId: gameState.captainPlayerId,
       squad: gameState.userSquad.map((entry) => ({
         slotId: entry.slotId,
-        player: { id: entry.player.id, name: entry.player.name, position: entry.player.position, overall: entry.player.overall }
+        player: {
+          id: entry.player.id,
+          name: entry.player.name,
+          position: entry.player.position,
+          overall: entry.player.overall,
+          room: entry.player.room
+        }
       }))
     };
   }
