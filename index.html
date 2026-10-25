@@ -2607,11 +2607,14 @@
                 const shootoutKicks = [];
 
                 const captainSquadEntry = userSquad.find(sq => sq.player.id === gameState.captainPlayerId);
+                // O capitão cobra primeiro; depois, os demais jogadores seguem a ordem do elenco.
+                const shootoutOrder = captainSquadEntry
+                    ? [captainSquadEntry, ...userSquad.filter(sq => sq.player.id !== captainSquadEntry.player.id)]
+                    : [...userSquad];
+
                 for (let k = 1; k <= 5; k++) {
-                    // Captain takes the first shootout kick for the user's team.
-                    const kickerA = k === 1 && captainSquadEntry
-                        ? captainSquadEntry.player
-                        : userSquad[(k - 1) % userSquad.length].player;
+                    const kickerEntry = shootoutOrder[(k - 1) % shootoutOrder.length];
+                    const kickerA = kickerEntry ? kickerEntry.player : { name: `Jogador #${k}` };
                     const kickerB = oppPlayers[(k - 1) % oppPlayers.length] || { name: `Jogador #${k}` };
 
                     const successA = Math.random() < 0.75;
@@ -2629,16 +2632,27 @@
                     });
                 }
 
-                if (pA === pB) {
-                    const suddenDeathKicker = captainSquadEntry ? captainSquadEntry.player : userSquad[0].player;
-                    pA += 1; // User sudden death victory
+                // Disputa em morte súbita: cada equipe cobra uma vez por rodada até desempatar.
+                // Nunca atribuir a vitória automaticamente ao time do usuário.
+                let suddenDeathRound = 6;
+                while (pA === pB) {
+                    const kickerEntry = shootoutOrder[(suddenDeathRound - 1) % shootoutOrder.length];
+                    const kickerA = kickerEntry ? kickerEntry.player : { name: `Jogador #${suddenDeathRound}` };
+                    const kickerB = oppPlayers[(suddenDeathRound - 1) % oppPlayers.length] || { name: `Jogador #${suddenDeathRound}` };
+
+                    const successA = Math.random() < 0.75;
+                    const successB = Math.random() < 0.70;
+                    if (successA) pA++;
+                    if (successB) pB++;
+
                     shootoutKicks.push({
-                        round: 6,
-                        kickerA: suddenDeathKicker.name,
-                        successA: true,
-                        kickerB: oppPlayers[0] ? oppPlayers[0].name : 'Jogador #6',
-                        successB: false
+                        round: suddenDeathRound,
+                        kickerA: kickerA.name,
+                        successA,
+                        kickerB: kickerB.name,
+                        successB
                     });
+                    suddenDeathRound++;
                 }
 
                 match.penaltyScoreA = match.teamA.isUser ? pA : pB;
