@@ -12,6 +12,7 @@ const online = fs.readFileSync(path.join(root, 'online.js'), 'utf8');
 const render = fs.readFileSync(path.join(root, 'render.yaml'), 'utf8');
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 const officialDatabase = JSON.parse(fs.readFileSync(path.join(root, 'team-data.json'), 'utf8'));
+const { seedFirstRoundTeams } = require(path.join(root, 'bracket-seeding.js'));
 
 function extractJsonObject(source, marker) {
   const markerIndex = source.indexOf(marker);
@@ -56,6 +57,42 @@ assert.deepStrictEqual(
   'A base de jogadores no navegador precisa ser igual à base validada pelo servidor.'
 );
 
+for (let humanCount = 2; humanCount <= 8; humanCount++) {
+  for (let trial = 0; trial < 40; trial++) {
+    let seed = trial + humanCount * 101;
+    const random = () => {
+      seed = (seed * 48271) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+    const teams = Array.from({ length: 16 }, (_, index) => ({
+      id: 'team-' + index,
+      isHuman: index < humanCount
+    }));
+    const seeded = seedFirstRoundTeams(teams, random);
+    assert.equal(seeded.length, 16, 'A chave inicial deve conter 16 participantes.');
+    assert.equal(new Set(seeded.map((team) => team.id)).size, 16, 'A chave não pode duplicar ou perder equipes.');
+    for (let i = 0; i < 16; i += 2) {
+      assert.ok(!(seeded[i].isHuman && seeded[i + 1].isHuman),
+        'Com até 8 humanos, ninguém deve enfrentar outro humano nas oitavas.');
+    }
+    if (humanCount === 2) {
+      const humanMatchIndexes = [];
+      for (let i = 0; i < 16; i += 2) {
+        if (seeded[i].isHuman || seeded[i + 1].isHuman) humanMatchIndexes.push(i / 2);
+      }
+      assert.equal(Math.abs(humanMatchIndexes[0] - humanMatchIndexes[1]), 4,
+        'Com 2 humanos, a chave deve colocá-los em lados opostos para evitar o confronto antes da final.');
+    }
+  }
+}
+for (let humanCount = 9; humanCount <= 16; humanCount++) {
+  const teams = Array.from({ length: 16 }, (_, index) => ({ id: 'team-' + index, isHuman: index < humanCount }));
+  const seeded = seedFirstRoundTeams(teams, () => 0.371);
+  assert.equal(seeded.length, 16);
+  assert.equal(new Set(seeded.map((team) => team.id)).size, 16);
+  assert.ok(seeded.every(Boolean));
+}
+
 const teamNames = Object.keys(officialDatabase);
 assert.equal(teamNames.length, 18, 'A base precisa conter as 18 turmas/anos esperados.');
 for (const [teamName, players] of Object.entries(officialDatabase)) {
@@ -78,6 +115,9 @@ assert.ok(html.includes('src="/socket.io/socket.io.js"'), 'O cliente Socket.IO p
 assert.ok(html.includes('src="/online.js"'), 'O módulo online precisa ser carregado.');
 assert.ok(server.includes("app.get('/healthz'"), 'O servidor precisa expor o health check do Render.');
 assert.ok(server.includes("socket.on('room:startTournament'"), 'O servidor precisa controlar o início do torneio.');
+assert.ok(server.includes("socket.on('room:replay'"), 'Jogar novamente deve restaurar as configurações da mesma sala.');
+assert.ok(server.includes("seedFirstRoundTeams(Object.values(room.tournament.participants))"), 'A chave deve separar participantes humanos quando possível.');
+assert.ok(server.includes('displayName: player.name,'), 'O nome de exibição deve ser o apelido, não a turma.');
 assert.ok(server.includes("socket.on('room:setMode'"), 'O anfitrião precisa configurar o modo geral da sala.');
 assert.ok(server.includes("socket.on('stage:confirm'"), 'Cada participante ativo precisa confirmar a fase.');
 assert.ok(server.includes("requiredReadyIds.every"), 'A fase só pode avançar após as confirmações necessárias.');
@@ -93,6 +133,9 @@ assert.ok(online.includes("emit('match:submit'"), 'O resultado deve ser confirma
 assert.ok(online.includes("emit('stage:confirm'"), 'O cliente deve enviar a confirmação da próxima fase.');
 assert.ok(online.includes("emit('room:setMode'"), 'O cliente deve enviar o modo escolhido pelo anfitrião.');
 assert.ok(html.includes('id="btn-online-confirm-stage"'), 'A tela de espera precisa ter o botão de confirmação da fase.');
+assert.ok(html.includes('id="btn-online-replay-start"'), 'A sala precisa oferecer reinício usando os elencos salvos.');
+assert.ok(html.includes('id="online-round-results-list"'), 'A espera precisa exibir os resultados dos confrontos simultâneos.');
+assert.ok(html.includes('id="btn-restart-game"'), 'O botão Jogar novamente precisa ter um identificador estável.');
 assert.ok(html.includes('id="btn-room-mode-blind"') && html.includes('id="btn-room-mode-classic"'), 'A sala precisa oferecer os dois modos globais.');
 
 assert.equal(pkg.scripts.start, 'node server.js');

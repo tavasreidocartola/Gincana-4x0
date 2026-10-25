@@ -10,6 +10,7 @@
   const originalFinalize = window.finalizeFullTimeMatch;
   const originalProceed = window.proceedAfterMatch;
   const originalSummary = window.showTournamentSummary;
+  const originalRestart = window.restartGame;
   const originalSelectMode = window.selectMode;
   const stages = ['oitavas', 'quartas', 'semi', 'final'];
   const byId = (id) => document.getElementById(id);
@@ -36,6 +37,7 @@
     if (byId('online-waiting-text')) byId('online-waiting-text').textContent = message;
     if (online.room) renderPlayerRows(byId('online-waiting-players'), online.room);
     renderStageReadyButton();
+    renderRoundResults();
     window.showScreen('screen-online-waiting');
   }
   function applyRoomMode(mode) {
@@ -132,6 +134,57 @@
       container.appendChild(empty);
     }
   }
+  function renderRoundResults() {
+    const container = byId('online-round-results-list');
+    const title = byId('online-round-results-title');
+    if (!container) return;
+    container.innerHTML = '';
+    const tournament = online.tournament;
+    const matches = tournament && tournament.stages && tournament.stages[tournament.stage] || [];
+    const section = container.parentElement;
+    if (section) section.classList.toggle('hidden', !matches.length);
+    if (!matches.length) return;
+    const stageNames = { oitavas: 'OITAVAS', quartas: 'QUARTAS', semi: 'SEMIFINAIS', final: 'FINAL' };
+    if (title) title.textContent = 'RESULTADOS DA RODADA — ' + (stageNames[tournament.stage] || String(tournament.stage).toUpperCase());
+    matches.forEach((match) => {
+      const row = document.createElement('div');
+      row.className = 'border-2 border-gray-200 bg-white px-3 py-2 rounded';
+      const a = match.teamA || {};
+      const b = match.teamB || {};
+      const aName = a.displayName || a.name || 'Time A';
+      const bName = b.displayName || b.name || 'Time B';
+      const ownsMatch = a.id === online.id || b.id === online.id;
+      const humanOpponent = !ownsMatch && ((a.isHuman && a.name) || (b.isHuman && b.name));
+      const label = document.createElement('div');
+      label.className = 'flex items-center justify-between gap-2 text-[10px] font-sports text-gray-500 mb-1';
+      label.textContent = ownsMatch ? 'SUA PARTIDA' : (humanOpponent ? 'PARTIDA DE ' + humanOpponent : 'OUTRO CONFRONTO');
+      const teams = document.createElement('div');
+      teams.className = 'grid grid-cols-[1fr_auto_1fr] gap-2 items-center text-xs font-semibold';
+      const teamA = document.createElement('span');
+      teamA.className = 'text-gray-800';
+      teamA.textContent = aName;
+      const score = document.createElement('span');
+      score.className = 'font-sports text-sm font-bold text-red-600 whitespace-nowrap';
+      if (match.played) {
+        let value = String(match.scoreA) + ' × ' + String(match.scoreB);
+        if (match.scoreA === match.scoreB && match.penaltyScoreA != null && match.penaltyScoreB != null) {
+          value += ' (P ' + match.penaltyScoreA + '–' + match.penaltyScoreB + ')';
+        }
+        score.textContent = value;
+      } else {
+        score.textContent = 'VS';
+      }
+      const teamB = document.createElement('span');
+      teamB.className = 'text-gray-800 text-right';
+      teamB.textContent = bName;
+      teams.append(teamA, score, teamB);
+      const status = document.createElement('div');
+      status.className = 'text-[10px] font-sports mt-1 ' + (match.played ? 'text-green-700' : 'text-gray-400');
+      status.textContent = match.played ? 'RESULTADO CONFIRMADO' : 'AGUARDANDO RESULTADO';
+      row.append(label, teams, status);
+      container.appendChild(row);
+    });
+  }
   function renderRoom(state) {
     online.room = state;
     online.hostId = state.hostId;
@@ -143,8 +196,16 @@
     if (byId('online-room-code-input')) byId('online-room-code-input').value = state.code;
     if (byId('online-room-summary')) byId('online-room-summary').textContent = state.playerCount + '/' + state.maxPlayers + ' participantes • ' + state.readyCount + ' elenco(s) pronto(s)';
     if (byId('btn-online-enter-setup')) {
-      byId('btn-online-enter-setup').disabled = ['tournament', 'finished'].includes(state.phase);
+      byId('btn-online-enter-setup').disabled = ['tournament', 'finished'].includes(state.phase) || Boolean(state.replayWaiting);
+      byId('btn-online-enter-setup').textContent = state.replayWaiting ? 'ELENCOS JÁ SALVOS' : 'COMEÇAR MONTAGEM DO ELENCO';
       byId('btn-online-enter-setup').classList.toggle('opacity-50', byId('btn-online-enter-setup').disabled);
+    }
+    const replayStart = byId('btn-online-replay-start');
+    if (replayStart) {
+      const canReplayStart = online.enabled && online.id === state.hostId && state.replayWaiting && state.canStart;
+      replayStart.classList.toggle('hidden', !canReplayStart);
+      replayStart.disabled = !canReplayStart;
+      replayStart.classList.toggle('opacity-50', !canReplayStart);
     }
     if (byId('btn-online-leave-room')) {
       byId('btn-online-leave-room').disabled = ['tournament', 'finished'].includes(state.phase);
@@ -154,7 +215,7 @@
     renderPlayerRows(byId('online-waiting-players'), state);
     const launch = byId('btn-online-launch-tournament');
     if (launch) {
-      const canShow = online.enabled && online.id === state.hostId && state.canStart && ['lobby', 'drafting'].includes(state.phase);
+      const canShow = online.enabled && online.id === state.hostId && state.canStart && !state.replayWaiting && ['lobby', 'drafting'].includes(state.phase);
       launch.classList.toggle('hidden', !canShow);
       launch.disabled = !canShow;
       launch.classList.toggle('opacity-50', !canShow);
@@ -191,6 +252,20 @@
       if (!state || state.code !== online.code) return;
       online.enabled = true;
       renderRoom(state);
+    });
+    socket.on('room:replay-ready', (state) => {
+      if (!state || state.code !== online.code) return;
+      online.enabled = true;
+      online.tournament = null;
+      online.currentMatchId = null;
+      gameState.activeMatch = null;
+      gameState.currentPhase = 'LOBBY';
+      gameState.currentBracketStage = 'oitavas';
+      gameState.currentMatchIndex = 0;
+      gameState.bracket = { oitavas: [], quartas: [], semi: [], final: [] };
+      renderRoom(state);
+      setStatus('Você voltou às configurações da sala. Os elencos estão salvos; escolha o modo e o anfitrião pode iniciar outro mata-mata.');
+      window.showScreen('screen-online-lobby');
     });
     socket.on('tournament:state', (state) => {
       if (state && state.roomCode === online.code) handleTournament(state);
@@ -358,6 +433,21 @@
     if (online.enabled && online.code) emit('room:enterSetup', {}, (res) => { if (res && res.ok === false) setStatus(res.error, true); });
     return originalStartDrafting();
   };
+  window.restartGame = function () {
+    if (!online.enabled || !online.code || !online.tournament || online.tournament.phase !== 'finished') {
+      if (typeof originalRestart === 'function') return originalRestart();
+      return;
+    }
+    const button = byId('btn-restart-game');
+    if (button) { button.disabled = true; button.textContent = 'VOLTANDO À SALA...'; }
+    emit('room:replay', {}, (res) => {
+      if (!res || !res.ok) {
+        const message = res && res.error ? res.error : 'Não foi possível voltar às configurações da sala.';
+        setStatus(message, true);
+        if (button) { button.disabled = false; button.textContent = 'JOGAR NOVAMENTE 🔄'; }
+      }
+    });
+  };
   window.confirmCaptainAndStart = function () {
     if (!online.enabled || !online.code) return originalConfirm();
     if (!gameState.captainPlayerId || gameState.userSquad.length !== 7) return;
@@ -443,6 +533,18 @@
     });
   };
 
+  function launchTournamentFromRoom(button) {
+    if (button) { button.disabled = true; button.textContent = 'INICIANDO MATA-MATA...'; }
+    emit('room:startTournament', {}, (res) => {
+      if (!res || !res.ok) {
+        const message = res && res.error ? res.error : 'Não foi possível iniciar o campeonato.';
+        setStatus(message, true);
+        if (button) { button.disabled = false; button.textContent = 'INICIAR NOVO MATA-MATA (MANTER ELENCOS)'; }
+        return;
+      }
+      waiting('SORTEANDO AS OITAVAS', 'Os elencos foram mantidos. O servidor está montando a nova chave do mata-mata.');
+    });
+  }
   function setupHandlers() {
     const nameInput = byId('online-player-name');
     if (nameInput && online.name) nameInput.value = online.name;
@@ -549,13 +651,9 @@
       else finish();
     });
     const launch = byId('btn-online-launch-tournament');
-    if (launch) launch.addEventListener('click', () => {
-      launch.disabled = true;
-      emit('room:startTournament', {}, (res) => {
-        if (!res || !res.ok) { launch.disabled = false; setStatus(res && res.error ? res.error : 'Não foi possível iniciar o campeonato.', true); return; }
-        waiting('SORTEANDO AS OITAVAS', 'O servidor está montando a tabela oficial. A rodada só termina quando todos os confrontos estiverem confirmados.');
-      });
-    });
+    if (launch) launch.addEventListener('click', () => launchTournamentFromRoom(launch));
+    const replayStart = byId('btn-online-replay-start');
+    if (replayStart) replayStart.addEventListener('click', () => launchTournamentFromRoom(replayStart));
     const back = byId('btn-online-back-to-lobby');
     if (back) back.addEventListener('click', () => {
       if (online.tournament) {

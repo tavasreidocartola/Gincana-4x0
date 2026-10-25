@@ -230,6 +230,7 @@
                         <p id="online-room-mode-description" class="text-xs text-gray-600 mt-2">Modo da sala: CLÁSSICO — todos veem os overalls.</p>
                     </div>
                     <div id="online-room-players" class="space-y-2 mt-3"></div>
+                    <button id="btn-online-replay-start" class="hidden retro-btn retro-btn-red w-full py-3 mt-4 font-sports">INICIAR NOVO MATA-MATA (MANTER ELENCOS)</button>
                     <button id="btn-online-enter-setup" class="retro-btn retro-btn-red w-full py-3 mt-4 font-sports">COMEÇAR MONTAGEM DO ELENCO</button>
                     <button id="btn-online-leave-room" class="retro-btn bg-white w-full py-2 mt-2 font-sports text-sm">SAIR DA SALA</button>
                 </div>
@@ -633,6 +634,10 @@
                 <div class="mt-5 border-t border-gray-300 pt-4">
                     <div class="font-sports text-sm mb-2">PARTICIPANTES E ELENCOS</div>
                     <div id="online-waiting-players" class="space-y-2"></div>
+                    <div class="mt-5 border-t border-gray-300 pt-4">
+                        <h3 id="online-round-results-title" class="font-sports text-sm text-gray-800 mb-3">RESULTADOS DA RODADA</h3>
+                        <div id="online-round-results-list" class="space-y-2"></div>
+                    </div>
                     <button id="btn-online-confirm-stage" class="hidden retro-btn retro-btn-red w-full py-3 mt-5 font-sports text-lg">CONFIRMAR E AGUARDAR OS OUTROS</button>
                     <button id="btn-online-launch-tournament" class="hidden retro-btn retro-btn-red w-full py-3 mt-5 font-sports text-lg">TODOS PRONTOS — LANÇAR CAMPEONATO</button>
                     <button id="btn-online-back-to-lobby" class="retro-btn bg-white w-full py-2 mt-3 font-sports text-sm">VOLTAR À SALA</button>
@@ -689,7 +694,7 @@
                         </div>
 
                         <div class="mt-6 border-t pt-4">
-                            <button onclick="restartGame()" class="retro-btn retro-btn-dark w-full py-3 font-sports text-lg tracking-wider">
+                            <button id="btn-restart-game" onclick="restartGame()" class="retro-btn retro-btn-dark w-full py-3 font-sports text-lg tracking-wider">
                                 JOGAR NOVAMENTE 🔄
                             </button>
                         </div>

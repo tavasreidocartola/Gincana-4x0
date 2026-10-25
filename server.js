@@ -5,6 +5,7 @@ const express = require('express');
 const { Server } = require('socket.io');
 const { createClient } = require('redis');
 const TEAM_DATABASE = require('./team-data.json');
+const { seedFirstRoundTeams } = require('./bracket-seeding');
 
 const PORT = Number(process.env.PORT || 10000);
 const STATE_KEY = 'gincana-4x0:rooms:v1';
@@ -77,6 +78,7 @@ function publicRoomState(room) {
   return {
     code: room.code, hostId: room.hostId, phase: room.phase,
     mode: room.mode === 'blind' ? 'blind' : 'classic',
+    replayWaiting: Boolean(room.replayWaiting),
     currentStage: room.tournament ? room.tournament.stage : null,
     playerCount: players.length, maxPlayers: MAX_PLAYERS, readyCount,
     canStart: players.length >= 2 && readyCount === players.length && ['lobby', 'drafting'].includes(room.phase),
@@ -232,7 +234,7 @@ function humanParticipant(player) {
   const r = player.roster;
   return {
     id: player.id, isHuman: true, isBot: false, name: player.name,
-    teamName: r.teamName, displayName: player.name + ' (' + r.teamName + ')',
+    teamName: r.teamName, displayName: player.name,
     squad: r.squad, captainPlayerId: r.captainPlayerId, formationKey: r.formationKey,
     mode: r.mode, ovr: r.ovr
   };
@@ -401,12 +403,16 @@ function beginTournament(room) {
   room.tournament = { phase: 'playing', stage: 'oitavas', stages: {}, participants, championId: null, readyPlayers: {} };
   const usedClasses = new Set(players.map((p) => p.roster.teamName));
   addBots(room, 16 - players.length, usedClasses);
-  room.tournament.stages.oitavas = createMatchesFromTeams('oitavas', shuffle(Object.values(room.tournament.participants)));
+  room.tournament.stages.oitavas = createMatchesFromTeams(
+    'oitavas',
+    seedFirstRoundTeams(Object.values(room.tournament.participants))
+  );
+  room.replayWaiting = false;
   room.phase = 'tournament';
   progressTournament(room);
 }
 function maybeBeginReadyRoom(room) {
-  if (!room || room.tournament || !['lobby', 'drafting'].includes(room.phase)) return false;
+  if (!room || room.tournament || room.replayWaiting || !['lobby', 'drafting'].includes(room.phase)) return false;
   const participants = Object.values(room.players || {});
   if (participants.length < 2 || participants.length > MAX_PLAYERS ||
       participants.some((participant) => !participant.roster)) return false;
@@ -480,7 +486,7 @@ io.on('connection', (socket) => {
         players: {
           [id]: { id, name, socketId: socket.id, connected: true, joinOrder: 1, status: 'na sala', roster: null }
         },
-        teamPool: null, tournament: null, createdAt: Date.now(), updatedAt: Date.now(), nextJoinOrder: 2
+        teamPool: null, tournament: null, replayWaiting: false, createdAt: Date.now(), updatedAt: Date.now(), nextJoinOrder: 2
       };
       rooms.set(code, room);
       await socket.join(code);
@@ -574,6 +580,7 @@ io.on('connection', (socket) => {
       const player = room && room.players[socket.data.playerId];
       if (!room || !player) throw new Error('Entre em uma sala antes de montar o elenco.');
       if (!['lobby', 'drafting'].includes(room.phase)) throw new Error('O campeonato já começou.');
+      if (room.replayWaiting) throw new Error('Os elencos já estão salvos. Volte à sala para iniciar outro mata-mata.');
       room.phase = 'drafting';
       player.status = 'montando';
       broadcastRoom(room);
@@ -589,6 +596,7 @@ io.on('connection', (socket) => {
       const player = room && room.players[socket.data.playerId];
       if (!room || !player) throw new Error('Entre novamente na sala antes de enviar seu elenco.');
       if (!['lobby', 'drafting'].includes(room.phase)) throw new Error('O campeonato já começou; o elenco foi bloqueado.');
+      if (room.replayWaiting) throw new Error('Os elencos já estão salvos. Volte à sala para iniciar outro mata-mata.');
       const submittedRoster = data && data.roster && typeof data.roster === 'object'
         ? { ...data.roster, mode: room.mode === 'blind' ? 'blind' : 'classic' }
         : data && data.roster;
@@ -617,6 +625,35 @@ io.on('connection', (socket) => {
       broadcastTournament(room);
     } catch (err) {
       if (typeof ack === 'function') ack({ ok: false, error: err.message || 'Não foi possível iniciar o campeonato.' });
+    }
+  });
+  socket.on('room:replay', async (_data, ack) => {
+    try {
+      const room = rooms.get(socket.data.roomCode);
+      const playerId = socket.data.playerId;
+      if (!room || !room.players[playerId]) throw new Error('Entre novamente na sala antes de reiniciar o campeonato.');
+      if (room.replayWaiting && !room.tournament) {
+        if (typeof ack === 'function') ack({ ok: true, duplicate: true, state: publicRoomState(room) });
+        io.to(room.code).emit('room:replay-ready', publicRoomState(room));
+        return;
+      }
+      if (!room.tournament || room.tournament.phase !== 'finished') {
+        throw new Error('Só é possível jogar novamente depois que o campeonato terminar.');
+      }
+      room.tournament = null;
+      room.phase = 'drafting';
+      room.replayWaiting = true;
+      Object.values(room.players).forEach((player) => {
+        player.status = player.roster ? 'pronto' : 'na sala';
+      });
+      touch(room);
+      const state = publicRoomState(room);
+      if (typeof ack === 'function') ack({ ok: true, state });
+      broadcastRoom(room);
+      io.to(room.code).emit('room:replay-ready', state);
+      await persistRooms();
+    } catch (err) {
+      if (typeof ack === 'function') ack({ ok: false, error: err.message || 'Não foi possível voltar às configurações da sala.' });
     }
   });
   socket.on('match:submit', async (data, ack) => {

@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "check:syntax": "node --check server.js && node --check online.js && node --check scripts/check-project.js",
+    "check:syntax": "node --check server.js && node --check online.js && node --check bracket-seeding.js && node --check scripts/check-project.js",
     "test": "npm run check:syntax && node scripts/check-project.js"
   },
   "engines": {
