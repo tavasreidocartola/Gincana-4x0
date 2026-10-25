@@ -580,8 +580,17 @@ io.on('connection', (socket) => {
       player.status = 'pronto';
       room.phase = 'drafting';
       touch(room);
-      if (typeof ack === 'function') ack({ ok: true, roster: player.roster });
-      broadcastRoom(room);
+      const participants = Object.values(room.players);
+      const allRostersReady = participants.length >= 2 && participants.length <= MAX_PLAYERS &&
+        participants.every((participant) => Boolean(participant.roster));
+      if (allRostersReady && !room.tournament) {
+        beginTournament(room);
+        if (typeof ack === 'function') ack({ ok: true, roster: player.roster, tournamentStarted: true });
+        broadcastTournament(room);
+      } else {
+        if (typeof ack === 'function') ack({ ok: true, roster: player.roster, tournamentStarted: false });
+        broadcastRoom(room);
+      }
       await persistRooms();
     } catch (err) {
       if (typeof ack === 'function') ack({ ok: false, error: err.message || 'Não foi possível salvar o elenco.' });

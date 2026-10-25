@@ -377,7 +377,9 @@
       }
       restoreRoster(res.roster);
       if (button) button.textContent = 'ELENCO ENVIADO ✓';
-      waiting('ELENCO FINALIZADO', 'Seu time foi confirmado e ficou salvo. Aguarde os outros terminarem; só então o anfitrião poderá liberar as oitavas.');
+      waiting('ELENCO CONFIRMADO', res.tournamentStarted
+        ? 'Todos confirmaram os elencos! O mata-mata está começando e a tabela será sincronizada para a sala.'
+        : 'Seu elenco está confirmado e salvo. Fique nesta tela; quando o último participante confirmar, o mata-mata começa automaticamente.');
     });
   };
   window.prepareAndLaunchMatch = function () {
