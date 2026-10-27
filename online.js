@@ -259,12 +259,14 @@
       online.tournament = null;
       online.currentMatchId = null;
       gameState.activeMatch = null;
+      gameState.userSquad = [];
+      gameState.captainPlayerId = null;
       gameState.currentPhase = 'LOBBY';
       gameState.currentBracketStage = 'oitavas';
       gameState.currentMatchIndex = 0;
       gameState.bracket = { oitavas: [], quartas: [], semi: [], final: [] };
       renderRoom(state);
-      setStatus('Você voltou às configurações da sala. Os elencos estão salvos; escolha o modo e o anfitrião pode iniciar outro mata-mata.');
+      setStatus('Todos voltaram à mesma sala. Os elencos foram apagados; cada participante precisa montar um novo time.');
       window.showScreen('screen-online-lobby');
     });
     socket.on('tournament:state', (state) => {
@@ -539,10 +541,10 @@
       if (!res || !res.ok) {
         const message = res && res.error ? res.error : 'Não foi possível iniciar o campeonato.';
         setStatus(message, true);
-        if (button) { button.disabled = false; button.textContent = 'INICIAR NOVO MATA-MATA (MANTER ELENCOS)'; }
+        if (button) { button.disabled = false; button.textContent = 'INICIAR NOVO MATA-MATA'; }
         return;
       }
-      waiting('SORTEANDO AS OITAVAS', 'Os elencos foram mantidos. O servidor está montando a nova chave do mata-mata.');
+      waiting('SORTEANDO AS OITAVAS', 'Todos enviaram os novos elencos. O servidor está montando a chave do mata-mata.');
     });
   }
   function setupHandlers() {

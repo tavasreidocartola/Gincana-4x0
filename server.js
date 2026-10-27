@@ -408,6 +408,7 @@ function beginTournament(room) {
     seedFirstRoundTeams(Object.values(room.tournament.participants))
   );
   room.replayWaiting = false;
+  room.replayReset = false;
   room.phase = 'tournament';
   progressTournament(room);
 }
@@ -486,7 +487,7 @@ io.on('connection', (socket) => {
         players: {
           [id]: { id, name, socketId: socket.id, connected: true, joinOrder: 1, status: 'na sala', roster: null }
         },
-        teamPool: null, tournament: null, replayWaiting: false, createdAt: Date.now(), updatedAt: Date.now(), nextJoinOrder: 2
+        teamPool: null, tournament: null, replayWaiting: false, replayReset: false, createdAt: Date.now(), updatedAt: Date.now(), nextJoinOrder: 2
       };
       rooms.set(code, room);
       await socket.join(code);
@@ -581,6 +582,7 @@ io.on('connection', (socket) => {
       if (!room || !player) throw new Error('Entre em uma sala antes de montar o elenco.');
       if (!['lobby', 'drafting'].includes(room.phase)) throw new Error('O campeonato já começou.');
       if (room.replayWaiting) throw new Error('Os elencos já estão salvos. Volte à sala para iniciar outro mata-mata.');
+      room.replayReset = false;
       room.phase = 'drafting';
       player.status = 'montando';
       broadcastRoom(room);
@@ -632,7 +634,7 @@ io.on('connection', (socket) => {
       const room = rooms.get(socket.data.roomCode);
       const playerId = socket.data.playerId;
       if (!room || !room.players[playerId]) throw new Error('Entre novamente na sala antes de reiniciar o campeonato.');
-      if (room.replayWaiting && !room.tournament) {
+      if (room.replayReset && !room.tournament) {
         if (typeof ack === 'function') ack({ ok: true, duplicate: true, state: publicRoomState(room) });
         io.to(room.code).emit('room:replay-ready', publicRoomState(room));
         return;
@@ -642,9 +644,11 @@ io.on('connection', (socket) => {
       }
       room.tournament = null;
       room.phase = 'drafting';
-      room.replayWaiting = true;
+      room.replayWaiting = false;
+      room.replayReset = true;
       Object.values(room.players).forEach((player) => {
-        player.status = player.roster ? 'pronto' : 'na sala';
+        player.roster = null;
+        player.status = 'na sala';
       });
       touch(room);
       const state = publicRoomState(room);

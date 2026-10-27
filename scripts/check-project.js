@@ -116,6 +116,9 @@ assert.ok(html.includes('src="/online.js"'), 'O módulo online precisa ser carre
 assert.ok(server.includes("app.get('/healthz'"), 'O servidor precisa expor o health check do Render.');
 assert.ok(server.includes("socket.on('room:startTournament'"), 'O servidor precisa controlar o início do torneio.');
 assert.ok(server.includes("socket.on('room:replay'"), 'Jogar novamente deve restaurar as configurações da mesma sala.');
+assert.ok(server.includes('player.roster = null;'), 'Jogar novamente deve apagar os elencos de todos os participantes.');
+assert.ok(server.includes('room.replayReset = true;'), 'O reset da sala precisa ser idempotente para cliques simultâneos.');
+assert.ok(online.includes('gameState.userSquad = [];'), 'O cliente também precisa limpar o elenco local ao reiniciar.');
 assert.ok(server.includes("seedFirstRoundTeams(Object.values(room.tournament.participants))"), 'A chave deve separar participantes humanos quando possível.');
 assert.ok(server.includes('displayName: player.name,'), 'O nome de exibição deve ser o apelido, não a turma.');
 assert.ok(server.includes("socket.on('room:setMode'"), 'O anfitrião precisa configurar o modo geral da sala.');
@@ -133,7 +136,8 @@ assert.ok(online.includes("emit('match:submit'"), 'O resultado deve ser confirma
 assert.ok(online.includes("emit('stage:confirm'"), 'O cliente deve enviar a confirmação da próxima fase.');
 assert.ok(online.includes("emit('room:setMode'"), 'O cliente deve enviar o modo escolhido pelo anfitrião.');
 assert.ok(html.includes('id="btn-online-confirm-stage"'), 'A tela de espera precisa ter o botão de confirmação da fase.');
-assert.ok(html.includes('id="btn-online-replay-start"'), 'A sala precisa oferecer reinício usando os elencos salvos.');
+assert.ok(html.includes('id="btn-online-replay-start"'), 'A sala precisa oferecer reinício na mesma sala.');
+assert.ok(html.includes('INICIAR NOVO MATA-MATA'), 'O rótulo de reinício não deve prometer manter os elencos.');
 assert.ok(html.includes('id="online-round-results-list"'), 'A espera precisa exibir os resultados dos confrontos simultâneos.');
 assert.ok(html.includes('id="btn-restart-game"'), 'O botão Jogar novamente precisa ter um identificador estável.');
 assert.ok(html.includes('id="btn-room-mode-blind"') && html.includes('id="btn-room-mode-classic"'), 'A sala precisa oferecer os dois modos globais.');
